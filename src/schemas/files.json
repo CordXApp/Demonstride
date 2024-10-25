@@ -1,0 +1,44 @@
+{
+    "title": "CDN files schema",
+    "type": "object",
+    "properties": {
+        "files": {
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/File"
+            },
+            "description": "A list of all files and directories in the CDN."
+        }
+    },
+    "definitions": {
+        "File": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "description": "The name of the file or directory."
+                },
+                "isDirectory": {
+                    "type": "boolean",
+                    "description": "Indicates if the item is a directory."
+                },
+                "path": {
+                    "type": "string",
+                    "description": "The relative path to the file or directory."
+                },
+                "children": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/File"
+                    },
+                    "description": "The list of files and directories within this directory (if it is a directory)."
+                }
+            },
+            "required": [
+                "name",
+                "isDirectory",
+                "path"
+            ]
+        }
+    }
+}
