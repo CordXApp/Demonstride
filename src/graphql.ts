@@ -8,7 +8,6 @@ const buildContext = async (req: FastifyRequest, _reply: FastifyReply) => ({
     authorization: req.headers.authorization,
 })
 
-// eslint-disable-next-line @typescript-eslint/naming-convention
 const Query = queryType({
     definition(t) {
         t.string('hello', {
