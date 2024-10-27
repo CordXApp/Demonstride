@@ -5,7 +5,7 @@
     "version": "4.3.0",
     "description": "Restful API for the CordX Services"
   },
-  "host": "0.0.0.0:3000",
+  "host": "0.0.0.0:4995",
   "paths": {
     "/files": {
       "get": {

@@ -22,7 +22,37 @@
         "skipLibCheck": true,
         "lib": [
             "ESNext"
-        ]
+        ],
+        "baseUrl": ".",
+        "paths": {
+            "@/*": [
+                "src/*"
+            ],
+            "@cdn/*": [
+                "src/cdn/*"
+            ],
+            "@generated/*": [
+                "src/generated/*"
+            ],
+            "@modules/*": [
+                "src/modules/*"
+            ],
+            "@plugins/*": [
+                "src/plugins/*"
+            ],
+            "@router/*": [
+                "src/routes/*"
+            ],
+            "@schemas/*": [
+                "src/schemas/*"
+            ],
+            "@types/*": [
+                "src/types/*"
+            ],
+            "@utils/*": [
+                "src/utils/*"
+            ]
+        }
     },
     "include": [
         "src/**/*.ts"

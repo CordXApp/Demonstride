@@ -7,16 +7,6 @@ datasource db {
     url      = env("DATABASE_URL")
 }
 
-enum EntityType {
-    USER
-    ORG
-}
-
-enum PermissionType {
-    USER
-    ORG
-}
-
 model Entity {
     id       String           @id @default(uuid()) // Unique identifier for the entity
     type     EntityType       @default(USER) // The type of the entity (user or organization)
@@ -46,18 +36,18 @@ model UserEntity {
 }
 
 model OrgEntity {
-    id          String       @id @unique // Unique identifier for the organization
-    name        String       @db.VarChar(255) // The organization name
-    logo        String       @db.VarChar(255) // The organization logo
-    banner      String       @db.LongText // The organization banner
-    description String       @db.LongText // The organization description
-    links       org_links? // The organization links (GitHub, Twitter, etc.)
-    members     org_member[] // List of members in the organization
-    creator     UserEntity   @relation("UserOrgs", fields: [owner], references: [userid])
-    owner       String       @db.VarChar(255) // The organization owner
-    createdAt   DateTime     @default(now()) // The date the organization was created
-    updatedAt   DateTime     @updatedAt // The date the organization was last updated
-    entity      Entity       @relation("OrgEntity", fields: [id], references: [id])
+    id          String             @id @unique // Unique identifier for the organization
+    name        String             @db.VarChar(255) // The organization name
+    logo        String             @db.VarChar(255) // The organization logo
+    banner      String             @db.LongText // The organization banner
+    description String             @db.LongText // The organization description
+    links       OrgEntityLinks? // The organization links (GitHub, Twitter, etc.)
+    members     OrgEntityMembers[] // List of members in the organization
+    creator     UserEntity         @relation("UserOrgs", fields: [owner], references: [userid])
+    owner       String             @db.VarChar(255) // The organization owner
+    createdAt   DateTime           @default(now()) // The date the organization was created
+    updatedAt   DateTime           @updatedAt // The date the organization was last updated
+    entity      Entity             @relation("OrgEntity", fields: [id], references: [id])
 }
 
 model EntitySecret {
@@ -67,12 +57,14 @@ model EntitySecret {
 }
 
 model EntityPerms {
-    id           String         @id @unique // Unique identifier for the permission
-    role         OrgPermissions // The role of the member in the organization
-    entityId     String // The entity the role belongs to
+    id           String            @id @unique // Unique identifier for the permission
+    type         PermissionType // The type of the permission (user or organization)
+    userPerm     UserPermissions? // The user permission
+    orgPerm      OrgPermissions? // The organization permission
+    entityId     String // The entity the permission belongs to
     org_memberId String?
-    entity       Entity         @relation(name: "EntityPermissions", fields: [entityId], references: [id], map: "EntityPermsEntityId")
-    org_member   org_member?    @relation(name: "OrgEntityRoles", fields: [org_memberId], references: [id], map: "EntityPermsOrgMemberId")
+    entity       Entity            @relation(name: "EntityPermissions", fields: [entityId], references: [id], map: "EntityPermsEntityId")
+    org_member   OrgEntityMembers? @relation(name: "OrgEntityRoles", fields: [org_memberId], references: [id], map: "EntityPermsOrgMemberId")
 }
 
 model EntityUploads {
@@ -113,6 +105,26 @@ model EntityWebhooks {
     entity   Entity  @relation(fields: [entityId], references: [id])
 }
 
+model OrgEntityMembers {
+    id     String        @id @unique // Unique identifier for the organization member
+    org    OrgEntity     @relation(fields: [orgId], references: [id]) // The organization the member belongs to
+    roles  EntityPerms[] @relation("OrgEntityRoles") // The roles the member has in the organization
+    userid String        @unique // The user ID of the member
+    orgId  String
+}
+
+model OrgEntityLinks {
+    id        String    @id @unique // Unique identifier for the organization links
+    discord   String    @db.Text // The organization Discord link
+    github    String    @db.Text // The organization GitHub link
+    twitter   String    @db.Text // The organization Twitter link
+    website   String    @db.Text // The organization website link
+    instagram String    @db.Text // The organization Instagram link
+    youtube   String    @db.Text // The organization YouTube link
+    orgId     String    @unique
+    org       OrgEntity @relation(fields: [orgId], references: [id]) // The organization the links belong to
+}
+
 model errors {
     id        String    @id @default(uuid()) // Unique identifier for the error
     state     ErrStates @default(OPEN) // The state of the error
@@ -145,24 +157,16 @@ model reports {
     updatedAt DateTime?    @updatedAt // The date the report was last updated
 }
 
-model org_member {
-    id     String        @id @unique // Unique identifier for the organization member
-    org    OrgEntity     @relation(fields: [orgId], references: [id]) // The organization the member belongs to
-    roles  EntityPerms[] @relation("OrgEntityRoles") // The roles the member has in the organization
-    userid String        @unique // The user ID of the member
-    orgId  String
+// Enums for the schema
+// --------------------------
+enum EntityType {
+    USER
+    ORG
 }
 
-model org_links {
-    id        String    @id @unique // Unique identifier for the organization links
-    discord   String    @db.Text // The organization Discord link
-    github    String    @db.Text // The organization GitHub link
-    twitter   String    @db.Text // The organization Twitter link
-    website   String    @db.Text // The organization website link
-    instagram String    @db.Text // The organization Instagram link
-    youtube   String    @db.Text // The organization YouTube link
-    orgId     String    @unique
-    org       OrgEntity @relation(fields: [orgId], references: [id]) // The organization the links belong to
+enum PermissionType {
+    USER
+    ORG
 }
 
 enum UserPermissions {

@@ -37,13 +37,12 @@ export async function initGraphql(app: FastifyInstance) {
         })
 
         await app.register(AltairFastify, {
-            path: '/altair',
-            baseURL: '/altair/',
+            path: '/gql',
+            baseURL: '/gql/',
             endpointURL: '/graphql',
         })
 
         await mercuriusCodegen(app, {
-            // Commonly relative to your root package.json
             targetPath: `${__dirname}/generated/graphql.ts`,
         })
     } catch (err: unknown) {

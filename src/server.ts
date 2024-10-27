@@ -2,10 +2,10 @@ import closeWithGrace from 'close-with-grace'
 import * as dotenv from 'dotenv'
 import Fastify from 'fastify'
 
-import { initGraphql } from './graphql'
-import { initSwagger } from './swagger'
+import { initGraphql } from '@/graphql';
+import { initSwagger } from '@/swagger';
 
-import app from './app'
+import app from '@/app'
 
 dotenv.config()
 
@@ -34,7 +34,7 @@ server.addHook('onClose', (_instance, done) => {
 })
 
 void server.listen({
-    port: Number(process.env.PORT ?? 3000),
+    port: Number(process.env.PORT ?? 4995),
     host: process.env.SERVER_HOSTNAME ?? '127.0.0.1',
 })
 
@@ -51,7 +51,7 @@ void server.ready((err) => {
     console.log(server.printRoutes())
 
     server.log.info(
-        `Server listening on port ${Number(process.env.PORT ?? 3000)}`,
+        `Server listening on port ${Number(process.env.PORT ?? 4995)}`,
     )
 })
 

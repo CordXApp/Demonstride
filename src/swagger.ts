@@ -7,8 +7,6 @@ import swaggerJsdoc from 'swagger-jsdoc'
 import fastifySwagger from '@fastify/swagger'
 import fastifySwaggerUi from '@fastify/swagger-ui'
 
-// Swagger definition
-// https://github.com/swagger-api/swagger-spec/blob/master/versions/2.0.md
 const swaggerDefinition: SwaggerDefinition = {
     openapi: '3.0.0',
     info: {
@@ -16,7 +14,7 @@ const swaggerDefinition: SwaggerDefinition = {
         version: '4.3.0',
         description: 'Restful API for the CordX Services',
     },
-    host: `0.0.0.0:${process.env.PORT ?? 3000}`,
+    host: `0.0.0.0:${process.env.PORT ?? 4995}`,
 }
 
 const apiDirectory = join(__dirname, 'routes')
