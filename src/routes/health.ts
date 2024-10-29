@@ -1,4 +1,5 @@
 import type { FastifyPluginAsync } from "fastify";
+import type CordX from '@/client';
 
 const health: FastifyPluginAsync = async (fastify, _opts): Promise<void> => {
 
@@ -15,6 +16,7 @@ const health: FastifyPluginAsync = async (fastify, _opts): Promise<void> => {
     fastify.get('/health', async (_request, _reply) => {
         const memoryUsage = process.memoryUsage();
         const uptime = process.uptime();
+        const client: CordX = fastify.cordx;
 
         const healthStatus = {
             status: 'OK',
@@ -26,6 +28,8 @@ const health: FastifyPluginAsync = async (fastify, _opts): Promise<void> => {
                     heapUsed: memoryUsage.heapUsed,
                     external: memoryUsage.external,
                 },
+                client: client.isReady() ? 'Connected' : 'Disconnected',
+                database: await client.db.isConnected() ? 'Connected' : 'Disconnected',
                 uptime: `${Math.floor(uptime / 60)} minutes ${Math.floor(uptime % 60)} seconds`,
                 nodeVersion: process.version,
                 platform: process.platform,

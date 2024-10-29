@@ -4,10 +4,15 @@ import Fastify from 'fastify'
 
 import { initGraphql } from '@/graphql';
 import { initSwagger } from '@/swagger';
+import CordX from '@/client';
+import { ClientOptions } from 'discord.js';
 
 import app from '@/app'
 
 dotenv.config()
+
+const discordOptions: ClientOptions = { intents: ["GuildMembers", "MessageContent"] }
+const discordClient = new CordX(discordOptions)
 
 const isProduction = process.env.NODE_ENV === 'production'
 const server = Fastify({
@@ -20,12 +25,17 @@ void initGraphql(server)
 
 void initSwagger(server)
 
+void discordClient.authenticate(process.env.TOKEN as string);
+
+server.decorate('cordx', discordClient);
+
 const closeListeners = closeWithGrace({ delay: 500 }, async (opts: any) => {
     if (opts.err) {
         server.log.error(opts.err)
     }
 
     await server.close()
+    await discordClient.destroy();
 })
 
 server.addHook('onClose', (_instance, done) => {
@@ -54,5 +64,11 @@ void server.ready((err) => {
         `Server listening on port ${Number(process.env.PORT ?? 4995)}`,
     )
 })
+
+declare module 'fastify' {
+    interface FastifyInstance {
+        cordx: CordX;
+    }
+}
 
 export { server as app }
