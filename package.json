@@ -76,7 +76,6 @@
         "prisma": "^5.21.1"
     },
     "devDependencies": {
-        "@biomejs/biome": "^1.9.4",
         "@tapjs/test": "^4.0.0",
         "@types/busboy": "^1.5.4",
         "@types/node": "^22.7.9",
