@@ -89,6 +89,15 @@ export default class UserMigrations {
                     this.logs.error(`Error migrating user: ${userId} to the new entity system: ${error.message}`);
                     return { success: false, message: `Error migrating user: ${userId} to the new entity system: ${error.message}` };
                 }
+            },
+
+            /**
+             * Migrate a user from our MySQL Entity System to the new MongoDB
+             * @param userId The user ID
+             * @returns { Promise<Responses> }
+             */
+            mysqlUser: async (userId: string): Promise<Responses> => {
+
             }
         }
     }
