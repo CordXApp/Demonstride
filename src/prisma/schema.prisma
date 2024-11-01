@@ -10,8 +10,8 @@ datasource db {
 model Entity {
     id       String           @id @default(uuid()) // Unique identifier for the entity
     type     EntityType       @default(USER) // The type of the entity (user or organization)
-    user     UserEntity?      @relation("UserEntity")
-    org      OrgEntity?       @relation("OrgEntity")
+    user     UserEntity?      @relation(fields: [userId], references: [id])
+    org      OrgEntity?       @relation(fields: [orgId], references: [id])
     domain   String?          @unique // The entity's domain (if applicable)
     domains  EntityDomains[] // List of domains associated with the entity
     uploads  EntityUploads[] // List of uploads created by the entity
@@ -19,10 +19,12 @@ model Entity {
     perms    EntityPerms[]    @relation("EntityPermissions") // List of permissions assigned to the entity
     secret   EntitySecret?    @relation(fields: [key], references: [key], map: "EntitySecretKey")
     key      String?          @unique // The entity's secret key
+    userId   String?          @unique // Foreign key to UserEntity
+    orgId    String?          @unique // Foreign key to OrgEntity
 }
 
 model UserEntity {
-    id         String                @id @default(uuid()) // The user's CordX Cornflake (snowflake)
+    id         String                @id @default(uuid()) // Unique identifier for the user
     avatar     String? // URL of the user's Discord avatar
     banner     String? // URL of the user's Discord banner
     username   String? // The user's Discord username
@@ -31,12 +33,13 @@ model UserEntity {
     folder     String?               @db.Text // The user's folder/bucket ID
     key        String?               @unique // The user's auth signature key
     signature  UserEntitySignatures? @relation(fields: [key], references: [key]) // The user's auth signature
-    entity     Entity                @relation("UserEntity", fields: [id], references: [id])
+    entityId   String // Foreign key to Entity
+    entity     Entity?
     orgs       OrgEntity[]           @relation("UserOrgs") // List of organizations created by the user
 }
 
 model OrgEntity {
-    id          String             @id @unique // Unique identifier for the organization
+    id          String             @id @default(uuid()) // Unique identifier for the organization
     name        String             @db.VarChar(255) // The organization name
     logo        String             @db.VarChar(255) // The organization logo
     banner      String             @db.LongText // The organization banner
@@ -47,7 +50,8 @@ model OrgEntity {
     owner       String             @db.VarChar(255) // The organization owner
     createdAt   DateTime           @default(now()) // The date the organization was created
     updatedAt   DateTime           @updatedAt // The date the organization was last updated
-    entity      Entity             @relation("OrgEntity", fields: [id], references: [id])
+    entityId    String // Foreign key to Entity
+    entity      Entity?
 }
 
 model EntitySecret {
@@ -80,7 +84,7 @@ model EntityUploads {
 }
 
 model UserEntitySignatures {
-    id         Int         @id @default(autoincrement()) // Unique identifier for the signature
+    id         String      @id // Unique identifier for the signature
     key        String      @unique @default(uuid()) // The signature key
     userEntity UserEntity?
 }
