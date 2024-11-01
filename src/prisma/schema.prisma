@@ -31,10 +31,10 @@ model UserEntity {
     globalName String? // The user's global name
     userid     String?               @unique // The user's Discord ID
     folder     String?               @db.Text // The user's folder/bucket ID
-    key        String?               @unique // The user's auth signature key
-    signature  UserEntitySignatures? @relation(fields: [key], references: [key]) // The user's auth signature
     entityId   String // Foreign key to Entity
     entity     Entity?
+    key        String?               @unique // The user's auth signature
+    signature  UserEntitySignatures? @relation(fields: [key], references: [key]) // Relationship to the user's signatures
     orgs       OrgEntity[]           @relation("UserOrgs") // List of organizations created by the user
 }
 
@@ -84,9 +84,9 @@ model EntityUploads {
 }
 
 model UserEntitySignatures {
-    id         String      @id // Unique identifier for the signature
-    key        String      @unique @default(uuid()) // The signature key
-    userEntity UserEntity?
+    id   String      @id @default(uuid()) // Unique identifier for the signature
+    key  String      @unique // The signature key
+    user UserEntity?
 }
 
 model EntityDomains {

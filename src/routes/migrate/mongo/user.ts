@@ -30,7 +30,7 @@ const MongoUserMigration: FastifyPluginAsync = async (fastify, _opts): Promise<v
 
         const migration = new Migrations(fastify.cordx);
 
-        const response = await migration.user.migrateMongoUser(_request.params.userId);
+        const response = await migration.user.migrate.mongoUser(_request.params.userId);
 
         if (!response.success) return _reply.code(500).send({
             status: '[Demonstride:migrate:mongo:user:error]',

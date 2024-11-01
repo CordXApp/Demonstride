@@ -1,21 +1,26 @@
 import type CordX from '@/client';
 import Mongo from './mongo.util';
+import MYSQL from './mysql.util';
 import { Responses } from '@/types/database';
 import { MongoUsers } from '@/models/cordxUsers';
+import { EntityModule } from '@/modules/entity.module';
 import Cornflake from '../cornflake.util';
-import { EntityType } from '@prisma/client';
 import Logger from '@/utils/logger.util';
 
 export default class UserMigrations {
     private client: CordX;
     private mongo: Mongo;
+    private mysql: MYSQL;
     private cornflake: Cornflake;
+    private entities: EntityModule;
     private logs: Logger;
 
-    constructor(client: CordX, mongo: Mongo) {
+    constructor(client: CordX, mongo: Mongo, mysql: MYSQL) {
         this.client = client;
         this.mongo = mongo;
+        this.mysql = mysql;
         this.logs = new Logger("[Demonstride]:User_Data_Migrations");
+        this.entities = new EntityModule(this.client);
         this.cornflake = new Cornflake({
             workerId: 1,
             processId: 2,
@@ -26,125 +31,65 @@ export default class UserMigrations {
         });
     }
 
-    /**
-     * Migrate a users data from mongo to mysql
-     * @param userId - The users Discord ID
-     * @returns A response object
-     */
-    public async migrateMongoUser(userId: string): Promise<Responses> {
-        const cornflake = this.cornflake.create();
+    public get migrate() {
+        return {
+            /**
+             * Migrate a user from our MongoDB to the new MySQL Entity System
+             * @param userId The user ID
+             * @returns { Promise<Responses> }
+             */
+            mongoUser: async (userId: string): Promise<Responses> => {
 
-        const signature = await this.createSignature(userId, cornflake);
-        if (!signature.success) return { success: false, message: signature.message };
+                await this.mongo.connect();
 
-        const entity = await this.createEntity(userId, cornflake);
-        if (!entity.success) return { success: false, message: entity.message };
+                const cornflake = this.cornflake.create();
 
-        const user = await this.createUser(userId, cornflake);
-        if (!user.success) return { success: false, message: user.message };
+                const mongoUser = await MongoUsers.findOne({ userId });
 
-        return { success: true, message: `Successfully migrated user ${userId}` };
-    }
-
-    /**
-     * Create a new user entity auth signature
-     * @param userId - The users Discord ID
-     * @param cornflake - The users Cornflake ID
-     * @returns A response object
-     */
-    private async createSignature(userId: string, cornflake: string): Promise<Responses> {
-        try {
-            await this.mongo.connect();
-
-            const user = await MongoUsers.findOne({ userId });
-
-            const exists = await this.client.db.prisma.userEntitySignatures.findUnique({ where: { key: user.signature.key } });
-
-            if (exists) return { success: false, message: `Authorization signature already exists for user: ${userId}` };
-
-            await this.client.db.prisma.userEntitySignatures.create({
-                data: {
-                    id: cornflake,
-                    key: user.signature.key
+                if (!mongoUser) {
+                    this.logs.error(`No user with ID: ${userId} found in our mongo`);
+                    return {
+                        success: false,
+                        message: `No user with ID: ${userId} found in our mongo`
+                    };
                 }
-            });
 
-            this.logs.info(`Successfully migrated user ${userId}'s auth signature`);
-            return { success: true, message: `Successfully migrated user ${userId}'s auth signature` };
-        } catch (error: any) {
-            this.logs.error(`Failed to migrate signature due to: ${error.message}`);
-            return { success: false, message: `Failed to migrate signature due to: ${error.message}` };
-        }
-    }
+                try {
 
-    /**
-     * Create a new user entity
-     * @param userId - The users Discord ID
-     * @param cornflake - The users Cornflake ID
-     * @returns A response object
-     */
-    private async createEntity(userId: string, cornflake: string): Promise<Responses> {
-        try {
-            await this.mongo.connect();
+                    const signature = await this.entities.create.signature({ cornflake, signature: mongoUser.signature ? mongoUser.signature.key : null });
+                    if (!signature.success) return { success: false, message: signature.message };
 
-            const user = await MongoUsers.findOne({ userId });
+                    const entity = await this.entities.create.entity({ cornflake, domain: mongoUser.active_domain !== 'none' ? mongoUser.active_domain : 'none', type: 'USER' });
+                    if (!entity.success) return { success: false, message: entity.message };
 
-            await this.client.db.prisma.entity.create({
-                data: {
-                    id: cornflake,
-                    type: EntityType.USER,
-                    domain: user.active_domain ? user.active_domain : "none"
-                }
-            })
+                    const user = await this.entities.create.user({
+                        avatar: mongoUser.avatar,
+                        banner: mongoUser.banner,
+                        username: mongoUser.username,
+                        globalName: mongoUser.globalName,
+                        entityId: cornflake,
+                        userid: userId,
+                        folder: cornflake,
+                        signature: mongoUser.signature ? mongoUser.signature.key : null
+                    })
 
-            this.logs.info(`Successfully created a new entity for user ${userId}`);
-            return { success: true, message: `Successfully created a new entity for user ${userId}` };
-        } catch (error: any) {
-            this.logs.error(`Failed to create entity due to: ${error.message}`);
-            return { success: false, message: `Failed to create entity due to: ${error.message}` };
-        }
-    }
+                    if (!user.success) return { success: false, message: user.message };
 
-    /**
-     * Create a new user
-     * @param userId - The users Discord ID
-     * @param cornflake - The users Cornflake ID
-     * @returns A response object
-     */
-    private async createUser(userId: string, cornflake: string): Promise<Responses> {
-        try {
-            await this.mongo.connect();
-
-            const user = await MongoUsers.findOne({ userId });
-            const migrated = await this.client.db.prisma.userEntity.findUnique({ where: { userid: userId } });
-
-            if (!user) return { success: false, message: `User with ID ${userId} not found in old database` };
-            if (migrated) return { success: false, message: `User with ID ${userId} already migrated` };
-
-            await this.client.db.prisma.userEntity.create({
-                data: {
-                    avatar: user.avatar,
-                    banner: user.banner,
-                    username: user.username,
-                    globalName: user.globalName,
-                    entityId: cornflake,
-                    userid: user.userId,
-                    folder: cornflake,
-                    entity: { connect: { id: cornflake } },
-                    signature: user.signature ? {
-                        connectOrCreate: {
-                            where: { key: user.signature.key },
-                            create: { id: cornflake, key: user.signature.key }
+                    return {
+                        success: true,
+                        message: 'User migrated successfully',
+                        data: {
+                            entity: entity.data,
+                            signature: signature.data,
+                            user: user.data
                         }
-                    } : undefined
-                }
-            });
+                    };
+                } catch (error: any) {
 
-            this.logs.info(`Successfully migrated user ${userId}'s data`);
-            return { success: true, message: `Successfully migrated user ${userId}'s data` };
-        } catch (error: any) {
-            this.logs.error(`Failed to migrate user ${userId} due to: ${error.message}`);
-            return { success: false, message: `Failed to migrate user ${userId} due to: ${error.message}` };
+                    this.logs.error(`Error migrating user: ${userId} to the new entity system: ${error.message}`);
+                    return { success: false, message: `Error migrating user: ${userId} to the new entity system: ${error.message}` };
+                }
+            }
         }
     }
 }

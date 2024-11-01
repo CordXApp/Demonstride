@@ -18,7 +18,6 @@
     "scripts": {
         "build": "tsup",
         "build:ts": "tsup --env.NODE_ENV production",
-        "check": "biome check --apply .",
         "compile-schemas": "json2ts -i src/schemas -o src/types",
         "copy:assets": "cpy 'src/generated/*.json' dist/generated",
         "db:init": "prisma init --schema=./src/prisma/schema.prisma",
@@ -26,10 +25,6 @@
         "db:push": "prisma db push --schema=./src/prisma/schema.prisma",
         "dev": "pnpm compile-schemas && pnpm dev:watch",
         "dev:watch": "tsx watch src/server.ts",
-        "format": "biome format . --write",
-        "lint": "biome lint .",
-        "migrate:eslint": "biome migrate eslint --write",
-        "migrate:prettier": "biome migrate prettier --write",
         "start": "tsx src/server.ts",
         "start:prod": "node dist/server.js",
         "test": "cross-env TS_NODE_FILES=true tap test/**/*.test.ts",
@@ -71,6 +66,7 @@
         "mercurius-integration-testing": "8.2.0",
         "mongoose": "^8.7.3",
         "moment": "^2.30.1",
+        "mysql2": "^3.11.3",
         "nexus": "^1.3.0",
         "swagger-jsdoc": "6.2.8",
         "prisma": "^5.21.1"
