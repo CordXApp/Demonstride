@@ -8,10 +8,6 @@
   "host": "0.0.0.0:4995",
   "tags": [
     {
-      "name": "Root",
-      "description": "Root API"
-    },
-    {
       "name": "Entities",
       "description": "Entities API"
     },
@@ -44,11 +40,69 @@
         }
       }
     },
-    "/files": {
+    "/entities/user/{id}": {
       "get": {
         "tags": [
-          "Root"
+          "Entities",
+          "Users"
         ],
+        "description": "Fetch a user by either their Discord ID or CordX Cornflake ID",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "The users's ID, can either be a Discord ID or a CordX Cornflake ID."
+            }
+          },
+          {
+            "in": "query",
+            "name": "id_type",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "The type of ID provided, can either be DISCORD or CORNFLAKE."
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns the user details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserEntity"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Missing or invalid CordX Cornflake ID",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "User not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/files": {
+      "get": {
         "description": "List all files and directories in the CDN.",
         "responses": {
           "200": {
@@ -72,9 +126,6 @@
     },
     "/health": {
       "get": {
-        "tags": [
-          "Root"
-        ],
         "description": "Check the health of the API.",
         "responses": {
           "200": {
@@ -117,6 +168,61 @@
                 "description": "The number of webhooks associated with the entity"
               }
             }
+          }
+        }
+      },
+      "UserEntity": {
+        "type": "object",
+        "properties": {
+          "avatar": {
+            "type": "string",
+            "description": "The user's Discord Avatar URL"
+          },
+          "banner": {
+            "type": "string",
+            "description": "The user's Discord Banner URL"
+          },
+          "username": {
+            "type": "string",
+            "description": "The user's Discord Username"
+          },
+          "globalName": {
+            "type": "string",
+            "description": "The user's Discord Global Username"
+          },
+          "userid": {
+            "type": "string",
+            "description": "The user's Discord ID"
+          },
+          "entityId": {
+            "type": "string",
+            "description": "The user's Entity ID"
+          },
+          "_count": {
+            "type": "object",
+            "properties": {
+              "orgs": {
+                "type": "number",
+                "description": "The number of organizations the user is in/owns"
+              }
+            }
+          }
+        }
+      },
+      "Error": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "description": "The status code of the error"
+          },
+          "message": {
+            "type": "string",
+            "description": "The error message"
+          },
+          "code": {
+            "type": "number",
+            "description": "The HTTP status code"
           }
         }
       },

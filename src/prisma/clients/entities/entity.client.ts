@@ -14,6 +14,34 @@ export class EntityClient {
         return {
 
             /**
+             * Fetch all entities!
+             * @returns { Promise<Responses> }
+             */
+            all: async (): Promise<Responses> => {
+
+                try {
+                    const entities = await this.client.db.prisma.entity.findMany({
+                        select: {
+                            id: true,
+                            type: true,
+                            domain: true,
+                            _count: {
+                                select: {
+                                    domains: true,
+                                    uploads: true,
+                                    webhooks: true
+                                }
+                            }
+                        }
+                    });
+
+                    return { success: true, data: entities };
+                } catch (error: any) {
+                    return { success: false, message: `Error fetching entities: ${error.message}` };
+                }
+            },
+
+            /**
              * Create a new entity!
              * @param id The cornflake of the entity
              * @param type The type of the entity
@@ -103,7 +131,12 @@ export class EntityClient {
 
                 try {
                     const entity = await this.client.db.prisma.entity.findUnique({
-                        where: { id }
+                        where: { id },
+                        select: {
+                            id: true,
+                            type: true,
+                            domain: true,
+                        }
                     });
 
                     return { success: true, data: entity };

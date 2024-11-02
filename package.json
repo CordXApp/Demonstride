@@ -55,6 +55,7 @@
         "altair-fastify-plugin": "7.3.6",
         "close-with-grace": "^2.1.0",
         "discord.js": "^14.16.3",
+        "discord-oauth2": "^2.12.1",
         "dotenv": "^16.4.5",
         "fastify": "4.28.1",
         "fastify-cli": "^7.0.1",

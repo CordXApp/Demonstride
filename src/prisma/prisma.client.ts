@@ -7,6 +7,7 @@ import type CordX from '@/client';
  */
 import { EntityClient } from '@/prisma/clients/entities/entity.client';
 import { UserClient } from '@/prisma/clients/entities/user.client';
+import { DomainClient } from '@/prisma/clients/entities/domain.client';
 
 const prisma = new PrismaClient();
 
@@ -18,6 +19,7 @@ export class DatabaseClient {
     /** Primsa Clients */
     public entities: EntityClient;
     public users: UserClient;
+    public domains: DomainClient;
 
     constructor(cordx: CordX) {
         this.prisma = prisma;
@@ -25,6 +27,7 @@ export class DatabaseClient {
         this.logs = new Logger('Demonstride:PrismaManager');
         this.entities = new EntityClient(cordx);
         this.users = new UserClient(cordx);
+        this.domains = new DomainClient(cordx);
     }
 
     public async isConnected(): Promise<boolean> {

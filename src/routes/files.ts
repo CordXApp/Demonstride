@@ -7,7 +7,6 @@ import { join, posix } from 'path';
 * @swagger
 * /files:
 *   get:
-*     tags: ['Root']
 *     description: List all files and directories in the CDN.
 *     responses:
 *       200:

@@ -7,7 +7,6 @@ const health: FastifyPluginAsync = async (fastify, _opts): Promise<void> => {
      * @swagger
      * /health:
      *   get:
-     *     tags: ['Root']
      *     description: Check the health of the API.
      *     responses:
      *       200:
