@@ -1,5 +1,5 @@
 import { DatabaseClient } from "@/prisma/prisma.client";
-import { Client, ClientOptions, Collection } from "discord.js";
+import { Client, ClientOptions } from "discord.js";
 import Logger from "@utils/logger.util";
 
 export default class CordX extends Client {
@@ -10,7 +10,7 @@ export default class CordX extends Client {
     constructor(options: ClientOptions) {
         super(options);
 
-        this.db = new DatabaseClient();
+        this.db = new DatabaseClient(this);
         this.logs = new Logger("Demonstride:DiscordClient");
 
         this.init();

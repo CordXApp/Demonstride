@@ -1,8 +1,8 @@
 import { randomBytes, createCipheriv, createDecipheriv } from 'node:crypto';
-import { SecurityClient } from '../types/modules/security';
+import { EncryptionClient } from '../types/index';
 import Logger from "@/utils/logger.util";
 
-export class SecurityModule implements SecurityClient {
+export class SecurityModule implements EncryptionClient {
     private logs: Logger;
 
     constructor() {

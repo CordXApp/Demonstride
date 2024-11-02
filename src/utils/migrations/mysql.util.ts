@@ -45,4 +45,19 @@ export default class MySQL {
     public getConnection(): Connection | null {
         return this.connection;
     }
+
+    public async query(query: string, values?: any): Promise<any> {
+        if (!this.connection) {
+            this.logs.error(`[Demonstride:MySQL] no connection to the database`);
+            return null;
+        }
+
+        try {
+            const [rows] = await this.connection.query(query, values);
+            return rows;
+        } catch (error: any) {
+            this.logs.error(`[Demonstride:MySQLError] failed to query the database: ${error.message}`);
+            return null;
+        }
+    }
 }

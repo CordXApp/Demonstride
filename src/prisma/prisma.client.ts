@@ -1,17 +1,30 @@
-import { PrismaClient, Prisma } from '@prisma/client';
 import Logger from '@utils/logger.util';
+import { PrismaClient } from '@prisma/client';
+import type CordX from '@/client';
 
-const prisma = new PrismaClient({
-    log: ['query', 'info', 'warn', 'error']
-});
+/**
+ * Prisma Clients
+ */
+import { EntityClient } from '@/prisma/clients/entities/entity.client';
+import { UserClient } from '@/prisma/clients/entities/user.client';
+
+const prisma = new PrismaClient();
 
 export class DatabaseClient {
-    public logs: Logger;
+    private logs: Logger;
+    private cordx: CordX;
     public prisma: PrismaClient;
 
-    constructor() {
+    /** Primsa Clients */
+    public entities: EntityClient;
+    public users: UserClient;
+
+    constructor(cordx: CordX) {
         this.prisma = prisma;
+        this.cordx = cordx;
         this.logs = new Logger('Demonstride:PrismaManager');
+        this.entities = new EntityClient(cordx);
+        this.users = new UserClient(cordx);
     }
 
     public async isConnected(): Promise<boolean> {

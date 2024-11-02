@@ -15,6 +15,16 @@ const swaggerDefinition: SwaggerDefinition = {
         description: 'Restful API for the CordX Services',
     },
     host: `0.0.0.0:${process.env.PORT ?? 4995}`,
+    tags: [{
+        name: 'Root',
+        description: 'Root API'
+    }, {
+        name: 'Entities',
+        description: 'Entities API'
+    }, {
+        name: 'Users',
+        description: 'Users API',
+    }]
 }
 
 const apiDirectory = join(__dirname, 'routes')

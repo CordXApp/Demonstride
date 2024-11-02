@@ -1,4 +1,4 @@
-import { Responses } from '@/types/database/index';
+import { Responses } from '@/types/index';
 
 import {
     Entity,
@@ -15,43 +15,6 @@ import {
     OrgEntityMembers,
     OrgPermissions
 } from '@prisma/client';
-
-export interface EntityHandler {
-    get create(): {
-        entity: (params: CreateEntityParams) => Promise<Responses>;
-        signature: (params: CreateSignatureParams) => Promise<Responses>;
-        user: (params: CreateUserParams) => Promise<Responses>;
-    }
-}
-
-/**
- * Create a new entity!
- * @param userId The user ID
- * @param cornflake The cornflake of the entity
- * @param domain The domain of the entity
- * @returns { Promise<Responses> }
- */
-export interface CreateEntityParams {
-    cornflake: string;
-    domain: string;
-    type: 'USER' | 'ORG';
-}
-
-export interface CreateSignatureParams {
-    cornflake: string;
-    signature: string;
-}
-
-export interface CreateUserParams {
-    avatar: string;
-    banner: string;
-    username: string;
-    globalName: string;
-    entityId: string;
-    userid: string;
-    folder: string;
-    signature: string;
-}
 
 export interface UserEntity {
     id?: string;

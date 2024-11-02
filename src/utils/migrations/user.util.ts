@@ -1,9 +1,8 @@
 import type CordX from '@/client';
 import Mongo from './mongo.util';
 import MYSQL from './mysql.util';
-import { Responses } from '@/types/database';
+import { Responses } from '@/types';
 import { MongoUsers } from '@/models/cordxUsers';
-import { EntityModule } from '@/modules/entity.module';
 import Cornflake from '../cornflake.util';
 import Logger from '@/utils/logger.util';
 
@@ -12,7 +11,6 @@ export default class UserMigrations {
     private mongo: Mongo;
     private mysql: MYSQL;
     private cornflake: Cornflake;
-    private entities: EntityModule;
     private logs: Logger;
 
     constructor(client: CordX, mongo: Mongo, mysql: MYSQL) {
@@ -20,7 +18,6 @@ export default class UserMigrations {
         this.mongo = mongo;
         this.mysql = mysql;
         this.logs = new Logger("[Demonstride]:User_Data_Migrations");
-        this.entities = new EntityModule(this.client);
         this.cornflake = new Cornflake({
             workerId: 1,
             processId: 2,
@@ -56,10 +53,10 @@ export default class UserMigrations {
 
                 try {
 
-                    const signature = await this.entities.create.signature({ cornflake, signature: mongoUser.signature ? mongoUser.signature.key : null });
+                    const signature = await this.client.db.entities.model.create.signature({ cornflake, signature: mongoUser.signature ? mongoUser.signature.key : null });
                     if (!signature.success) return { success: false, message: signature.message };
 
-                    const entity = await this.entities.create.entity({ cornflake, domain: mongoUser.active_domain !== 'none' ? mongoUser.active_domain : 'none', type: 'USER' });
+                    const entity = await this.client.db.entities.model.create(cornflake, 'USER', mongoUser.active_domain ? mongoUser.active_domain : 'none');
                     if (!entity.success) return { success: false, message: entity.message };
 
                     const user = await this.entities.create.user({
@@ -97,6 +94,16 @@ export default class UserMigrations {
              * @returns { Promise<Responses> }
              */
             mysqlUser: async (userId: string): Promise<Responses> => {
+
+                await this.mysql.connect();
+
+                const user = await this.client.db.prisma.userEntity.findUnique({ where: { userid: userId } });
+
+                if (!user) {
+
+
+                }
+
 
             }
         }

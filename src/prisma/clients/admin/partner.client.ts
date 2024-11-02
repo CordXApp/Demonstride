@@ -1,4 +1,4 @@
-import { PartnerMethods, Responses } from '@/types/database/index';
+import { PartnerMethods, Responses } from '@/types/index';
 import type CordX from '@/client';
 
 interface Partners {

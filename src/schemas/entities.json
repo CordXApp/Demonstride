@@ -1,0 +1,40 @@
+{
+    "title": "Entities file schema",
+    "type": "object",
+    "properties": {
+        "id": {
+            "type": "string",
+            "description": "The Entity's CordX Cornflake ID"
+        },
+        "type": {
+            "type": "string",
+            "description": "The type of entity (User, Organization)"
+        },
+        "domain": {
+            "type": "string",
+            "description": "The domain of the entity"
+        },
+        "_count": {
+            "type": "object",
+            "properties": {
+                "domains": {
+                    "type": "number",
+                    "description": "The number of domains associated with the entity"
+                },
+                "uploads": {
+                    "type": "number",
+                    "description": "The number of uploads created by the entity"
+                },
+                "webhooks": {
+                    "type": "number",
+                    "description": "The number of webhooks associated with the entity"
+                }
+            }
+        }
+    },
+    "definitions": {
+        "Entity": {
+            "$ref": "#/properties"
+        }
+    }
+}
