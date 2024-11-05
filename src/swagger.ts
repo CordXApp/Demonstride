@@ -16,6 +16,12 @@ const swaggerDefinition: SwaggerDefinition = {
     },
     host: `0.0.0.0:${process.env.PORT ?? 4995}`,
     tags: [{
+        name: 'Auth',
+        description: 'Authentication API'
+    }, {
+        name: 'Bucket',
+        description: 'Bucket API'
+    }, {
         name: 'Entities',
         description: 'Entities API'
     }, {

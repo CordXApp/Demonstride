@@ -1,0 +1,99 @@
+{
+    "title": "User Bucket schema",
+    "type": "object",
+    "properties": {
+        "BucketData": {
+            "type": "object",
+            "properties": {
+                "status": {
+                    "type": "string",
+                    "description": "The status of the request"
+                },
+                "total": {
+                    "type": "number",
+                    "description": "The total number of items in the bucket"
+                },
+                "limit": {
+                    "type": "number",
+                    "description": "The limit of items per page"
+                },
+                "Bucket": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/BucketItem"
+                    }
+                }
+            }
+        },
+        "BucketItem": {
+            "type": "object",
+            "properties": {
+                "userId": {
+                    "type": "string",
+                    "description": "The user id"
+                },
+                "itemId": {
+                    "type": "string",
+                    "description": "The item id"
+                },
+                "itemSize": {
+                    "type": "number",
+                    "description": "The size of the item"
+                },
+                "lastModified": {
+                    "type": "string",
+                    "description": "The last modified date"
+                },
+                "itemETag": {
+                    "type": "string",
+                    "description": "The item ETag"
+                },
+                "itemOwner": {
+                    "type": "string",
+                    "description": "The item owner"
+                }
+            }
+        },
+        "Error": {
+            "type": "object",
+            "properties": {
+                "status": {
+                    "type": "string",
+                    "description": "The status code of the error"
+                },
+                "message": {
+                    "type": "string",
+                    "description": "The error message"
+                },
+                "code": {
+                    "type": "number",
+                    "description": "The HTTP status code"
+                }
+            }
+        }
+    },
+    "definitions": {
+        "BucketData": {
+            "$ref": "#/properties/BucketData",
+            "type": "object",
+            "required": [
+                "status",
+                "total",
+                "limit",
+                "Bucket"
+            ]
+        },
+        "BucketItem": {
+            "$ref": "#/properties/BucketItem",
+            "type": "object",
+            "required": [
+                "userId",
+                "itemId",
+                "itemSize",
+                "lastModified",
+                "itemETag",
+                "itemOwner"
+            ]
+        }
+    }
+}

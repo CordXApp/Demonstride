@@ -8,6 +8,14 @@
   "host": "0.0.0.0:4995",
   "tags": [
     {
+      "name": "Auth",
+      "description": "Authentication API"
+    },
+    {
+      "name": "Bucket",
+      "description": "Bucket API"
+    },
+    {
       "name": "Entities",
       "description": "Entities API"
     },
@@ -17,6 +25,66 @@
     }
   ],
   "paths": {
+    "/bucket/{id}": {
+      "get": {
+        "tags": [
+          "Bucket"
+        ],
+        "description": "Fetches the user's bucket and its contents.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The user's Discord ID."
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "The maximum number of items to return."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns the user's bucket and its contents.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BucketData"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Missing or invalid Discord ID.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "User or Bucket not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/entities": {
       "get": {
         "tags": [
@@ -137,6 +205,76 @@
   },
   "components": {
     "schemas": {
+      "BucketData": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "description": "The status of the request."
+          },
+          "total": {
+            "type": "string",
+            "description": "The total number of items in the user's bucket."
+          },
+          "limit": {
+            "type": "string",
+            "description": "The number of items to show."
+          },
+          "bucket": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BucketItem"
+            }
+          }
+        }
+      },
+      "BucketItem": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "string",
+            "description": "Item owner's Discord ID."
+          },
+          "itemId": {
+            "type": "string",
+            "description": "The bucket item's ID."
+          },
+          "itemSize": {
+            "type": "number",
+            "description": "The size of the item in bytes."
+          },
+          "lastModified": {
+            "type": "string",
+            "format": "date-time",
+            "description": "The last modified date of the item."
+          },
+          "itemETag": {
+            "type": "string",
+            "description": "The ETag of the item."
+          },
+          "itemOwner": {
+            "type": "string",
+            "description": "The owner of the item."
+          }
+        }
+      },
+      "Error": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "description": "The status code of the error"
+          },
+          "message": {
+            "type": "string",
+            "description": "The error message"
+          },
+          "code": {
+            "type": "number",
+            "description": "The HTTP status code"
+          }
+        }
+      },
       "Entity": {
         "type": "object",
         "properties": {
@@ -206,23 +344,6 @@
                 "description": "The number of organizations the user is in/owns"
               }
             }
-          }
-        }
-      },
-      "Error": {
-        "type": "object",
-        "properties": {
-          "status": {
-            "type": "string",
-            "description": "The status code of the error"
-          },
-          "message": {
-            "type": "string",
-            "description": "The error message"
-          },
-          "code": {
-            "type": "number",
-            "description": "The HTTP status code"
           }
         }
       },
