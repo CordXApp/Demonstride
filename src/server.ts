@@ -2,12 +2,12 @@ import closeWithGrace from 'close-with-grace'
 import * as dotenv from 'dotenv'
 import Fastify from 'fastify'
 
-import { initGraphql } from '@/graphql';
-import { initSwagger } from '@/swagger';
-import CordX from '@/client';
+import { initGraphql } from './graphql';
+import { initSwagger } from './swagger';
 import { ClientOptions } from 'discord.js';
+import CordX from './client';
 
-import app from '@/app'
+import app from './app'
 
 dotenv.config()
 

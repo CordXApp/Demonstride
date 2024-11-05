@@ -32,8 +32,10 @@ const CallBack: FastifyPluginAsync = async (fastify, _opts): Promise<void> => {
 
         const auth_code = createHash('sha256').update(`${randomUUID()}_${randomUUID()}`.replace(/-/g, "")).digest('hex');
 
-        const user = await fastify.cordx.db.prisma.userEntity.findUnique({ where: { userid: authorized.id } });
+        let user = await fastify.cordx.db.prisma.userEntity.findUnique({ where: { userid: authorized.id } });
 
+        let avatarUrl: string = authorized.avatar?.startsWith('a_') ? `https://cdn.discordapp.com/avatars/${authorized.id}/${authorized.avatar}.gif` : `https://cdn.discordapp.com/avatars/${authorized.id}/${authorized.avatar}.png`;
+        let bannerUrl: string = authorized.banner?.startsWith('a_') ? `https://cdn.discordapp.com/banners/${authorized.id}/${authorized.banner}.gif` : `https://cdn.discordapp.com/banners/${authorized.id}/${authorized.banner}.png`;
 
 
     });

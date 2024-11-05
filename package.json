@@ -31,6 +31,7 @@
         "typecheck": "tsc -noEmit"
     },
     "dependencies": {
+        "@aws-sdk/client-s3": "^3.685.0",
         "@cordxapp/snowflake": "^0.4.18",
         "@fastify/autoload": "5.10.0",
         "@fastify/cors": "9.0.1",
@@ -69,6 +70,7 @@
         "moment": "^2.30.1",
         "mysql2": "^3.11.3",
         "nexus": "^1.3.0",
+        "s3-readstream": "^2.0.1",
         "swagger-jsdoc": "6.2.8",
         "prisma": "^5.21.1"
     },
@@ -104,6 +106,10 @@
         "legacyOutput": true,
         "target": "es2018",
         "onSuccess": "npm run copy:assets"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/CordXApp/Demonstride.git"
     },
     "packageManager": "pnpm@9.12.2+sha512.22721b3a11f81661ae1ec68ce1a7b879425a1ca5b991c975b074ac220b187ce56c708fe5db69f4c962c989452eee76c82877f4ee80f474cebd61ee13461b6228"
 }

@@ -49,7 +49,7 @@ export class EntityClient {
              * @param key The key of the entity (optional)
              * @returns { Promise<Responses> }
              */
-            create: async (id: string, type: string, domain?: string, key?: string): Promise<Responses> => {
+            create: async (id: string, type: string, domain?: string, secret?: string): Promise<Responses> => {
 
                 if (!id || !domain || !type) {
                     const missing = !id ? 'cornflake' : !domain ? 'domain' : !type ? 'type' : null;
@@ -58,45 +58,75 @@ export class EntityClient {
 
                 try {
 
-                    await this.client.db.prisma.entity.create({
+                    const dataWithOptionalFields: {
+                        id: string,
+                        type: EntityType,
+                        domain?: string | null,
+                        secret?: string | null
+                    } = {
+                        id: id,
+                        type: type === 'USER' ? EntityType.USER : EntityType.ORG
+                    };
+
+                    if (domain) dataWithOptionalFields.domain = domain;
+                    if (secret) dataWithOptionalFields.secret = secret;
+
+                    await this.client.db.prisma.entity.create({ data: dataWithOptionalFields });
+
+                    return {
+                        success: true,
+                        message: 'Entity created successfully',
                         data: {
                             id: id,
-                            type: type === 'USER' ? EntityType.USER : EntityType.ORG,
-                            domain: domain ? domain : null,
-                            key: key ? key : null
+                            type: type,
+                            domain: domain,
+                            secret: secret
                         }
-                    });
+                    };
 
-                    return { success: true, message: 'Entity created successfully' };
                 } catch (error: any) {
-                    return { success: false, message: `Error creating entity: ${id}: ${error.message}` };
+
+                    return {
+                        success: false,
+                        message: `Error creating entity: ${id}: ${error.message}`
+                    };
                 }
             },
 
             /**
              * Update an entity!
              * @param cornflake The cornflake of the entity
-             * @param domain The domain of the entity
+             * @param domain The domain of the entity (optional)
+             * @param secret The secret of the entity (optional)
              * @returns { Promise<Responses> }
              */
-            update: async (id: string, domain?: string, key?: string): Promise<Responses> => {
+            update: async (id: string, domain?: string, secret?: string): Promise<Responses> => {
 
                 if (!id) return { success: false, message: 'Missing required param: cornflake' };
-                if (!domain && !key) return { success: false, message: 'Missing required param: domain or key' };
+                if (!domain && !secret) return { success: false, message: 'Missing required param: domain or key' };
 
                 try {
 
+                    const updateData: { domain?: string | null, secret?: string | null } = {};
+
+                    if (domain) updateData.domain = domain;
+                    if (secret) updateData.secret = secret;
+
                     await this.client.db.prisma.entity.update({
                         where: { id },
-                        data: {
-                            domain: domain ? domain : null,
-                            key: key ? key : null
-                        }
+                        data: updateData
                     });
 
-                    return { success: true, message: 'Successfully updated the entities domain' };
+                    return {
+                        success: true,
+                        message: 'Entity updated successfully',
+                        data: { id, domain, secret }
+                    }
                 } catch (error: any) {
-                    return { success: false, message: `Error updating entity: ${id}: ${error.message}` };
+                    return {
+                        success: false,
+                        message: `Error updating entity: ${id}: ${error.message}`
+                    };
                 }
             },
 

@@ -17,25 +17,23 @@ model Entity {
     uploads  EntityUploads[] // List of uploads created by the entity
     webhooks EntityWebhooks[] // List of webhooks associated with the entity
     perms    EntityPerms[]    @relation("EntityPermissions") // List of permissions assigned to the entity
-    secret   EntitySecret?    @relation(fields: [key], references: [key], map: "EntitySecretKey")
-    key      String?          @unique // The entity's secret key
+    secret   String?          @unique // The entity's API secret
     userId   String?          @unique // Foreign key to UserEntity
     orgId    String?          @unique // Foreign key to OrgEntity
 }
 
 model UserEntity {
-    id         String                @id @default(uuid()) // Unique identifier for the user
-    avatar     String? // URL of the user's Discord avatar
-    banner     String? // URL of the user's Discord banner
-    username   String? // The user's Discord username
-    globalName String? // The user's global name
-    userid     String?               @unique // The user's Discord ID
-    folder     String?               @db.Text // The user's folder/bucket ID
-    entityId   String // Foreign key to Entity
-    entity     Entity?
-    key        String?               @unique // The user's auth signature
-    signature  UserEntitySignatures? @relation(fields: [key], references: [key]) // Relationship to the user's signatures
-    orgs       OrgEntity[]           @relation("UserOrgs") // List of organizations created by the user
+    id           String         @id @default(uuid()) // Unique identifier for the user
+    avatar       String? // URL of the user's Discord avatar
+    banner       String? // URL of the user's Discord banner
+    followedOrgs OrgFollowers[] // List of organizations the user follows
+    username     String? // The user's Discord username
+    globalName   String? // The user's global name
+    userid       String?        @unique // The user's Discord ID
+    folder       String?        @db.Text // The user's folder/bucket ID
+    entityId     String // Foreign key to Entity
+    entity       Entity?
+    orgs         OrgEntity[]    @relation("UserOrgs") // List of organizations created by the user
 }
 
 model OrgEntity {
@@ -52,12 +50,17 @@ model OrgEntity {
     updatedAt   DateTime           @updatedAt // The date the organization was last updated
     entityId    String // Foreign key to Entity
     entity      Entity?
+    followers   OrgFollowers[] // List of users following the organization
 }
 
-model EntitySecret {
-    id     String  @id @default(uuid()) // Unique identifier for the secret
-    key    String  @unique // The secret key
-    entity Entity? @relation(map: "EntitySecretKey")
+model OrgFollowers {
+    id        String     @id @default(uuid()) // Unique identifier for the follower
+    userId    String // Foreign key to UserEntity
+    user      UserEntity @relation(fields: [userId], references: [id])
+    orgId     String // Foreign key to OrgEntity
+    org       OrgEntity  @relation(fields: [orgId], references: [id])
+    createdAt DateTime   @default(now()) // The date the follow was created
+    updatedAt DateTime?  @updatedAt // The date the follow was last updated
 }
 
 model EntityPerms {
@@ -81,12 +84,6 @@ model EntityUploads {
     size     Int? // The size of the file (in bytes)
     date     DateTime? // The date the file was uploaded
     entity   Entity    @relation(fields: [entityId], references: [id])
-}
-
-model UserEntitySignatures {
-    id   String      @id @default(uuid()) // Unique identifier for the signature
-    key  String      @unique // The signature key
-    user UserEntity?
 }
 
 model EntityDomains {
