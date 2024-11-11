@@ -24,8 +24,8 @@ export interface DomainMethods {
     delete?: (id: string) => Promise<Responses>;
 }
 
-export interface EntityCreateMethods {
-    user: (entity: Entity) => Promise<Responses>;
+export interface UserEntityMethods {
+    create: (entity: Entity) => Promise<Responses>;
     //integration: (entity: Entity) => Promise<Responses>;
     //organization: (entity: Entity) => Promise<Responses>;
 }

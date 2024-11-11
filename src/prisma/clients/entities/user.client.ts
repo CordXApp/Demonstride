@@ -1,86 +1,62 @@
-import { UserMethods, Responses } from '@/types/index';
-import { UserEntity } from '@/types/entitity';
+import { UserEntityMethods, Responses } from '@/types/index';
+import { EntityClient } from './base.client';
+import { Entity, EntityType } from '@/types/entitity';
 import type CordX from '@/client';
 
-export class UserClient {
-    private client: CordX;
+export class UserEntities {
 
-    constructor(client: CordX) {
+    private client: CordX;
+    public parent: EntityClient;
+
+    constructor({ client, parent }: { client: CordX, parent: EntityClient }) {
         this.client = client;
+        this.parent = parent;
     }
 
-    public get model(): UserMethods {
+    public get method(): UserEntityMethods {
         return {
             /**
              * Create a new user entity
-             * @param avatar The user's avatar
-             * @param banner The user's banner
-             * @param username The user's username
-             * @param globalName The user's global name
-             * @param userid The user's Discord ID
-             * @param folder The user's folder
-             * @param entityId The user's entity ID
-             * @returns { Promise<Responses> }
+             * @param entity The entity to create
+             * @returns {Promise<Responses>}
              */
-            create: async ({ avatar, banner, username, globalName, userid, folder, entityId }: UserEntity): Promise<Responses> => {
+            create: async (entity: Entity): Promise<Responses> => {
 
-                const required = !avatar || !banner || !username || !globalName || !userid || !folder || !entityId;
-                if (required) return { success: false, message: 'Please provide all the required fields.' };
+                const { name, handle, userid, avatar, banner } = entity;
+
+                if (!name || !handle || !userid) {
+                    const missing = !name ? 'name' : !handle ? 'handle' : 'userid';
+                    return { success: false, message: `Missing required field: ${missing}` };
+                }
 
                 try {
 
-                    const user = await this.client.db.prisma.userEntity.create({
-                        data: {
-                            avatar,
-                            banner,
-                            username,
-                            globalName,
-                            userid,
-                            entityId,
-                        }
-                    })
+                    const apiKey = await this.parent.createApiKey();
 
-                    if (!user) return { success: false, message: 'Error creating user entity.' };
+                    const data = {
+                        id: this.parent.cornflake.create(),
+                        name: name,
+                        handle: handle,
+                        type: 'DISCORD_USER' as EntityType,
+                        userid: userid,
+                        avatar: avatar || null,
+                        banner: banner || null,
+                        apiKey: apiKey
+                    };
 
-                    return { success: true, data: user };
+                    const entity = await this.client.db.prisma.entity.create({ data });
+
+                    return {
+                        success: true,
+                        message: `Successfully created entity: ${entity.id}`,
+                        data: entity
+                    }
                 } catch (error: any) {
-                    return { success: false, message: `Error creating user entity: ${error.message}` };
+                    return {
+                        success: false,
+                        message: `Failed to create entity: ${error.message}`
+                    };
                 }
-            },
-
-            fetch: async (id: string, id_type: 'DISCORD' | 'CORNFLAKE'): Promise<Responses> => {
-
-                if (!id) return { success: false, message: 'Please provide a valid CordX Cornflake or Discord ID for the user.' };
-
-                let user: any;
-
-                if (id_type === 'DISCORD') {
-                    user = await this.client.db.prisma.userEntity.findUnique({ where: { userid: id } });
-                } else if (id_type === 'CORNFLAKE') {
-                    user = await this.client.db.prisma.userEntity.findFirst({
-                        where: { entityId: id },
-                        select: {
-                            avatar: true,
-                            banner: true,
-                            username: true,
-                            globalName: true,
-                            userid: true,
-                            entityId: true,
-                            _count: {
-                                select: {
-                                    orgs: true
-                                }
-                            }
-                        }
-                    });
-                }
-
-                if (!user) return {
-                    success: false,
-                    message: 'User not found, are you sure you provided the correct ID Type?',
-                };
-
-                return { success: true, data: user };
             }
         }
     }

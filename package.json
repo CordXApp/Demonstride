@@ -15,14 +15,13 @@
   "scripts": {
     "build": "tsup",
     "build:ts": "tsup --env.NODE_ENV production",
-    "compile-schemas": "json2ts -i src/schemas -o src/types",
+    "compile:types": "json2ts -i src/schemas -o src/types",
     "copy:assets": "cpy 'src/generated/*.json' dist/generated",
     "db:init": "prisma init --schema=./src/prisma/schema.prisma",
     "db:create": "prisma generate --schema=./src/prisma/schema.prisma",
     "db:push": "prisma db push --schema=./src/prisma/schema.prisma",
-    "dev": "bun compile-schemas && bun dev:watch",
+    "dev": "bun dev:watch",
     "dev:watch": "tsx watch src/server.ts",
-    "postinstall": "npx prisma generate --schema=./src/prisma/schema.prisma",
     "start": "tsx src/server.ts",
     "start:prod": "node dist/server.js",
     "typecheck": "tsc -noEmit"
