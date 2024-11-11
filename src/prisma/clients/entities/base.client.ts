@@ -1,6 +1,6 @@
 import Logger from '@utils/logger.util';
 import Cornflake from '@/utils/cornflake.util';
-import { UserEntities } from './user.client';
+import { UserEntities } from './user.entity';
 import { randomBytes } from 'crypto';
 import type CordX from '@/client';
 import axios from 'axios';

@@ -2,7 +2,7 @@ import type CordX from '@/client';
 import Mongo from './mongo.util';
 import MYSQL from './mysql.util';
 import { Responses } from '@/types';
-import { UserClient } from '@/prisma/clients/entities/user.client';
+import { UserClient } from '@/prisma/clients/entities/user.entity';
 import { EntityClient } from '@/prisma/clients/entities/base.client';
 import { MongoUsers } from '@/models/cordxUsers';
 import Logger from '@/utils/logger.util';
