@@ -27,7 +27,7 @@ const swaggerDefinition: SwaggerDefinition = {
     }, {
         name: 'Users',
         description: 'Users API',
-    }]
+    }],
 }
 
 const apiDirectory = join(__dirname, 'routes')

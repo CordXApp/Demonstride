@@ -1,7 +1,6 @@
 import { Schema } from 'mongoose'
-import { CordXSignatures } from '@/types/database/users';
 
-export const UserSignatureSchema: Schema = new Schema<CordXSignatures>(
+export const UserSignatureSchema: Schema = new Schema<any>(
     {
         key: { type: String, required: true }
     },

@@ -1,35 +1,73 @@
 {
-    "title": "Entities file schema",
+    "title": "Entities",
     "type": "object",
     "properties": {
         "id": {
             "type": "string",
-            "description": "The Entity's CordX Cornflake ID"
+            "description": "The Entity's Cornflake ID"
+        },
+        "name": {
+            "type": "string",
+            "description": "The Entity's name"
         },
         "type": {
             "type": "string",
-            "description": "The type of entity (User, Organization)"
+            "enum": [
+                "DISCORD_BOT",
+                "DISCORD_USER",
+                "ORGANIZATION"
+            ],
+            "description": "The type of Entity (e.g. 'DISCORD_USER', 'DISCORD_BOT', 'ORGANIZATION')"
+        },
+        "handle": {
+            "type": "string",
+            "description": "The handle of the entity (ie: @cordx)"
+        },
+        "biography": {
+            "type": "string",
+            "description": "The biography of the entity"
+        },
+        "avatar": {
+            "type": "string",
+            "description": "The avatar image for the entity"
+        },
+        "banner": {
+            "type": "string",
+            "description": "The banner image for the entity"
+        },
+        "userid": {
+            "type": "string",
+            "description": "The Discord User ID of the entity (if entity is a user)"
+        },
+        "botid": {
+            "type": "string",
+            "description": "The Discord Client ID of the entity (if entity is a bot)"
+        },
+        "webhook": {
+            "type": "string",
+            "description": "The Discord Webhook URL (if entity has a webhook)"
         },
         "domain": {
             "type": "string",
             "description": "The domain of the entity"
         },
-        "_count": {
-            "type": "object",
-            "properties": {
-                "domains": {
-                    "type": "number",
-                    "description": "The number of domains associated with the entity"
-                },
-                "uploads": {
-                    "type": "number",
-                    "description": "The number of uploads created by the entity"
-                },
-                "webhooks": {
-                    "type": "number",
-                    "description": "The number of webhooks associated with the entity"
-                }
-            }
+        "apiKey": {
+            "type": "string",
+            "description": "The API key for the entity"
+        },
+        "owner": {
+            "type": "string",
+            "description": "The owner of the entity (if entity is an organization)"
+        },
+        "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "The date the entity was created"
+        },
+        "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "The date the entity was last updated"
         }
     },
     "definitions": {

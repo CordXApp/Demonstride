@@ -87,6 +87,7 @@ model Domains {
     name     String  @db.VarChar(255)
     content  String  @db.LongText
     verified Boolean @default(false)
+    active   Boolean @default(true)
     entityId String
     entity   Entity  @relation(fields: [entityId], references: [id])
 
@@ -157,9 +158,9 @@ model reports {
 }
 
 enum EntityType {
-    DISCORD_BOT
-    DISCORD_USER
-    ORGANIZATION
+    DISCORD_USER // Allows discord users to create an account and upload images and files
+    INTEGRATION // Allows the creation of integrations with discord bots and other services
+    ORGANIZATION // Allows a user to create organizations for their apps/services
 }
 
 enum UserEntityPerms {

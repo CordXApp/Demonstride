@@ -1,4 +1,4 @@
-import { Entity, UserEntity } from "./entitity";
+import { Entity } from "./entitity";
 
 export interface Responses {
     success: boolean
@@ -24,13 +24,10 @@ export interface DomainMethods {
     delete?: (id: string) => Promise<Responses>;
 }
 
-export interface EntityMethods {
-    all: () => Promise<Responses>;
-    create: (id: string, type: 'USER' | 'ORG', domain?: string, key?: string) => Promise<Responses>;
-    update: (id: string, domain?: string, key?: string) => Promise<Responses>;
-    exists: (id: Entity['id']) => Promise<Boolean>;
-    fetch: (id: Entity['id']) => Promise<Responses>;
-    delete: (id: Entity['id']) => Promise<Responses>;
+export interface EntityCreateMethods {
+    user: (entity: Entity) => Promise<Responses>;
+    //integration: (entity: Entity) => Promise<Responses>;
+    //organization: (entity: Entity) => Promise<Responses>;
 }
 
 export interface EncryptionClient {

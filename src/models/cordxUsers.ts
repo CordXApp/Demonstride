@@ -1,9 +1,8 @@
 import mongoose, { Schema, model } from 'mongoose';
-import { CordXUser } from '@/types/database/users';
 import { UserSignatureSchema } from './jwtTokens'
 import { UserDomainSchema } from './userDomains'
 
-const MongoUserSchema = new Schema<CordXUser>({
+const MongoUserSchema = new Schema<any>({
     id: {
         type: Number,
         required: true

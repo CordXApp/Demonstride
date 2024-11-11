@@ -16,34 +16,22 @@ import {
     OrgPermissions
 } from '@prisma/client';
 
-export interface UserEntity {
+export interface Entity {
     id?: string;
+    name: string;
+    type?: EntityType;
+    handle: string;
+    biography?: string;
     avatar?: string;
     banner?: string;
-    username?: string;
-    globalName?: string;
-    userid: string;
-    folder?: string;
-    key?: string;
-    entityId?: string;
-    entity?: Entity;
-    orgs?: OrgEntity[];
-}
-
-export interface Entity {
-    id: string;
-    type: EntityType;
-    user?: UserEntity;
-    org?: OrgEntity;
+    userid?: string;
+    botid?: string;
+    webhook?: string;
     domain?: string;
-    domains?: EntityDomains[];
-    uploads?: EntityUploads[];
-    webhooks?: EntityWebhooks[];
-    perms?: EntityPerms[];
-    secret?: EntitySecret;
-    key?: string;
-    userId?: string;
-    orgId?: string;
+    apiKey?: string;
+    owner?: string;
+    createdAt?: DateTime;
+    updatedAt?: DateTime;
 }
 
 export interface OrgEntity {
@@ -134,8 +122,9 @@ export interface OrgEntityLinks {
 export type DateTime = string;
 
 export enum EntityType {
-    USER = 'USER',
-    ORG = 'ORG',
+    USER = 'DISCORD_USER',
+    INT = 'INTEGRATION',
+    ORG = 'ORGANIZATION',
 }
 
 export enum PermissionType {

@@ -67,7 +67,14 @@ void server.ready((err) => {
 
 declare module 'fastify' {
     interface FastifyInstance {
+        /** The Demonstride Client */
+        demonstride: CordX;
+        /** Alias for the Demonstride Client */
         cordx: CordX;
+        /** Alias for the Demonstride Client */
+        demon: CordX;
+        /** Alias for the Demonstride Client */
+        ds: CordX;
     }
 }
 
