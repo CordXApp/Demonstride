@@ -1,4 +1,5 @@
 import { UserMethods, Responses } from '@/types/index';
+import { UserEntity } from '@/types/entitity';
 import type CordX from '@/client';
 
 export class UserClient {
@@ -10,6 +11,42 @@ export class UserClient {
 
     public get model(): UserMethods {
         return {
+            /**
+             * Create a new user entity
+             * @param avatar The user's avatar
+             * @param banner The user's banner
+             * @param username The user's username
+             * @param globalName The user's global name
+             * @param userid The user's Discord ID
+             * @param folder The user's folder
+             * @param entityId The user's entity ID
+             * @returns { Promise<Responses> }
+             */
+            create: async ({ avatar, banner, username, globalName, userid, folder, entityId }: UserEntity): Promise<Responses> => {
+
+                const required = !avatar || !banner || !username || !globalName || !userid || !folder || !entityId;
+                if (required) return { success: false, message: 'Please provide all the required fields.' };
+
+                try {
+
+                    const user = await this.client.db.prisma.userEntity.create({
+                        data: {
+                            avatar,
+                            banner,
+                            username,
+                            globalName,
+                            userid,
+                            entityId,
+                        }
+                    })
+
+                    if (!user) return { success: false, message: 'Error creating user entity.' };
+
+                    return { success: true, data: user };
+                } catch (error: any) {
+                    return { success: false, message: `Error creating user entity: ${error.message}` };
+                }
+            },
 
             fetch: async (id: string, id_type: 'DISCORD' | 'CORNFLAKE'): Promise<Responses> => {
 

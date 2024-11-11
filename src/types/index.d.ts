@@ -9,6 +9,7 @@ export interface Responses {
 }
 
 export interface UserMethods {
+    create: (user: UserEntity) => Promise<Responses>;
     fetch: (id: string, id_type: 'DISCORD' | 'CORNFLAKE') => Promise<Responses>;
 }
 

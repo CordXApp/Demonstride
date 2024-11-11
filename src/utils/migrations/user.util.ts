@@ -2,30 +2,25 @@ import type CordX from '@/client';
 import Mongo from './mongo.util';
 import MYSQL from './mysql.util';
 import { Responses } from '@/types';
+import { UserClient } from '@/prisma/clients/entities/user.client';
+import { EntityClient } from '@/prisma/clients/entities/entity.client';
 import { MongoUsers } from '@/models/cordxUsers';
-import Cornflake from '../cornflake.util';
 import Logger from '@/utils/logger.util';
 
 export default class UserMigrations {
     private client: CordX;
     private mongo: Mongo;
     private mysql: MYSQL;
-    private cornflake: Cornflake;
+    private users: UserClient;
     private logs: Logger;
 
     constructor(client: CordX, mongo: Mongo, mysql: MYSQL) {
         this.client = client;
         this.mongo = mongo;
         this.mysql = mysql;
+        this.users = new UserClient(client)
+        this.entities = new EntityClient(client)
         this.logs = new Logger("[Demonstride]:User_Data_Migrations");
-        this.cornflake = new Cornflake({
-            workerId: 1,
-            processId: 2,
-            epoch: 3,
-            increment: 4,
-            sequence: 5n,
-            debug: false
-        });
     }
 
     public get migrate() {
@@ -52,22 +47,13 @@ export default class UserMigrations {
                 }
 
                 try {
-
-                    const signature = await this.client.db.entities.model.create.signature({ cornflake, signature: mongoUser.signature ? mongoUser.signature.key : null });
-                    if (!signature.success) return { success: false, message: signature.message };
-
+                    /** Create a new entity for the user. */
                     const entity = await this.client.db.entities.model.create(cornflake, 'USER', mongoUser.active_domain ? mongoUser.active_domain : 'none');
                     if (!entity.success) return { success: false, message: entity.message };
 
-                    const user = await this.entities.create.user({
-                        avatar: mongoUser.avatar,
-                        banner: mongoUser.banner,
-                        username: mongoUser.username,
-                        globalName: mongoUser.globalName,
-                        entityId: cornflake,
-                        userid: userId,
-                        folder: cornflake,
-                        signature: mongoUser.signature ? mongoUser.signature.key : null
+                    /** Create the user entity data */
+                    const user = await this.users.model.create({
+
                     })
 
                     if (!user.success) return { success: false, message: user.message };

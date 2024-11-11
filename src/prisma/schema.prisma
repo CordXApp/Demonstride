@@ -7,125 +7,121 @@ datasource db {
     url      = env("MYSQL_URI")
 }
 
+//-- ENTITY MODEL CAN BE A USER, BOT OR ORGANIZATION ENTITY --//
 model Entity {
-    id       String           @id @default(uuid()) // Unique identifier for the entity
-    type     EntityType       @default(USER) // The type of the entity (user or organization)
-    user     UserEntity?      @relation(fields: [userId], references: [id])
-    org      OrgEntity?       @relation(fields: [orgId], references: [id])
-    domain   String?          @unique // The entity's domain (if applicable)
-    domains  EntityDomains[] // List of domains associated with the entity
-    uploads  EntityUploads[] // List of uploads created by the entity
-    webhooks EntityWebhooks[] // List of webhooks associated with the entity
-    perms    EntityPerms[]    @relation("EntityPermissions") // List of permissions assigned to the entity
-    secret   String?          @unique // The entity's API secret
-    userId   String?          @unique // Foreign key to UserEntity
-    orgId    String?          @unique // Foreign key to OrgEntity
+    id        String       @id @default(uuid()) // Unique identifier for the entity
+    name      String       @db.Text // The name of the entity
+    type      EntityType   @default(DISCORD_USER) // The type of entity (User, Bot or Organization)
+    handle    String       @db.Text // The handle of the entity (ie: @cordx)
+    biography String?      @db.LongText // The biography of the entity
+    avatar    String?      @db.Text // The avatar image for the entity
+    banner    String?      @db.Text // The banner image for the entity
+    userid    String?      @db.Text // The Discord User ID of the entity (if entity is a user)
+    botid     String?      @db.Text // The Discord Client ID of the entity (if entity is a bot)
+    webhook   String?      @db.Text // The Discord Webhook URL (if entity has a webhook)
+    domain    String?      @db.Text // The domain of the entity
+    apiKey    String       @db.Text // The API key for the entity 
+    owner     String?      @db.Text // The owner of the entity (if entity is an organization)
+    perms     UserPerms[] // User permissions within the CordX System (if entity is a user)
+    domains   Domains[] // Domains owned by the entity (ie: cordx.dev)
+    uploads   Uploads[] // Uploads by the entity (ie: images, files)
+    webhooks  Webhooks[] // Webhooks for the entity (ie: Discord Webhook)
+    members   OrgMembers[] // Organization members (if entity is an organization)
+    following Followers[]  @relation("FollowingRelation") // Users or Orgs the entity is following
+    followers Followers[]  @relation("FollowersRelation") // Users or Orgs following this entity
+    createdAt DateTime     @default(now()) // The date the entity was created
+    updatedAt DateTime?    @updatedAt // The date the entity was last updated
 }
 
-model UserEntity {
-    id           String         @id @default(uuid()) // Unique identifier for the user
-    avatar       String? // URL of the user's Discord avatar
-    banner       String? // URL of the user's Discord banner
-    followedOrgs OrgFollowers[] // List of organizations the user follows
-    username     String? // The user's Discord username
-    globalName   String? // The user's global name
-    userid       String?        @unique // The user's Discord ID
-    folder       String?        @db.Text // The user's folder/bucket ID
-    entityId     String // Foreign key to Entity
-    entity       Entity?
-    orgs         OrgEntity[]    @relation("UserOrgs") // List of organizations created by the user
+//-- A USERS PERMISSIONS WITHIN THE CORDX SYSTEM --//
+model UserPerms {
+    id         String          @id @default(uuid())
+    entityId   String
+    entity     Entity          @relation(fields: [entityId], references: [id])
+    permission UserEntityPerms @default(BASE_USER)
+    createdAt  DateTime        @default(now())
+    updatedAt  DateTime?       @updatedAt
+
+    @@unique([entityId, permission])
 }
 
-model OrgEntity {
-    id          String             @id @default(uuid()) // Unique identifier for the organization
-    name        String             @db.VarChar(255) // The organization name
-    logo        String             @db.VarChar(255) // The organization logo
-    banner      String             @db.LongText // The organization banner
-    description String             @db.LongText // The organization description
-    links       OrgEntityLinks? // The organization links (GitHub, Twitter, etc.)
-    members     OrgEntityMembers[] // List of members in the organization
-    creator     UserEntity         @relation("UserOrgs", fields: [owner], references: [userid])
-    owner       String             @db.VarChar(255) // The organization owner
-    createdAt   DateTime           @default(now()) // The date the organization was created
-    updatedAt   DateTime           @updatedAt // The date the organization was last updated
-    entityId    String // Foreign key to Entity
-    entity      Entity?
-    followers   OrgFollowers[] // List of users following the organization
+//-- A MEMBERS PERMISSIONS WITHIN AN ORGANIZATION --//
+model MemberPerms {
+    id          String         @id @default(uuid())
+    orgMemberId String
+    orgMember   OrgMembers     @relation(fields: [orgMemberId], references: [id])
+    permission  OrgMemberPerms @default(GUEST)
+    createdAt   DateTime       @default(now())
+    updatedAt   DateTime?      @updatedAt
+
+    @@unique([orgMemberId, permission])
 }
 
-model OrgFollowers {
-    id        String     @id @default(uuid()) // Unique identifier for the follower
-    userId    String // Foreign key to UserEntity
-    user      UserEntity @relation(fields: [userId], references: [id])
-    orgId     String // Foreign key to OrgEntity
-    org       OrgEntity  @relation(fields: [orgId], references: [id])
-    createdAt DateTime   @default(now()) // The date the follow was created
-    updatedAt DateTime?  @updatedAt // The date the follow was last updated
+//-- A LIST OF MEMBERS WITHIN AN ORGANIZATION --//
+model OrgMembers {
+    id     String        @id @default(uuid())
+    org    Entity        @relation(fields: [orgId], references: [id])
+    orgId  String
+    roles  MemberPerms[]
+    userId String        @unique
+
+    @@unique([orgId, userId])
 }
 
-model EntityPerms {
-    id           String            @id @unique // Unique identifier for the permission
-    type         PermissionType // The type of the permission (user or organization)
-    userPerm     UserPermissions? // The user permission
-    orgPerm      OrgPermissions? // The organization permission
-    entityId     String // The entity the permission belongs to
-    org_memberId String?
-    entity       Entity            @relation(name: "EntityPermissions", fields: [entityId], references: [id], map: "EntityPermsEntityId")
-    org_member   OrgEntityMembers? @relation(name: "OrgEntityRoles", fields: [org_memberId], references: [id], map: "EntityPermsOrgMemberId")
+//-- A LIST OF FOLLOWERS AND FOLLOWING FOR USERS AND ORGS --//
+model Followers {
+    id          String    @id @default(uuid())
+    followerId  String
+    follower    Entity    @relation(fields: [followerId], references: [id], name: "FollowingRelation")
+    followingId String
+    following   Entity    @relation(fields: [followingId], references: [id], name: "FollowersRelation")
+    createdAt   DateTime  @default(now())
+    updatedAt   DateTime? @updatedAt
+
+    @@unique([followerId, followingId])
 }
 
-model EntityUploads {
-    id       String    @id @default(uuid()) // The image/upload ID
-    entityId String // The entity the upload/image belongs to
-    fileid   String? // The file ID (this is generated by the storage provider)
-    filename String? // The generated name of the file ([342837t2bd3gd3].png)
-    name     String? // The name of the file (Chrome_123456788.png)
-    type     String? // The type of the file (image/png)
-    size     Int? // The size of the file (in bytes)
-    date     DateTime? // The date the file was uploaded
-    entity   Entity    @relation(fields: [entityId], references: [id])
+//-- A LIST OF DOMAINS OWNED BY A ENTITY --//
+model Domains {
+    id       String  @id @default(uuid())
+    name     String  @db.VarChar(255)
+    content  String  @db.LongText
+    verified Boolean @default(false)
+    entityId String
+    entity   Entity  @relation(fields: [entityId], references: [id])
+
+    @@unique([name, entityId])
 }
 
-model EntityDomains {
-    id        String    @id @default(uuid()) // Unique identifier for the domain
-    name      String    @db.VarChar(255) // The domain name
-    content   String    @db.LongText // The domain content
-    verified  Boolean   @default(false) // Indicates if the domain is verified
-    createdAt DateTime  @default(now()) // The date the domain was created
-    updatedAt DateTime? @updatedAt // The date the domain was last updated
-    entityId  String // The entity the domain belongs to
+// -- A LIST OF UPLOADS FOR A ENTITY --//
+model Uploads {
+    id        String    @id @default(uuid())
+    name      String? // The name of the file
+    type      String? // The type of the file (ie: image/png)
+    mime      String? // The MIME type of the file (ie: png)
+    size      Int? // The size of the file in bytes (ie: 1024)
+    fileId    String? // The File ID (this is generated by the storage provider)
+    fileName  String? // The generated File Name (312g83g8213126.png)
+    shareable Boolean?  @default(false) // If the file is shareable
+    entityId  String // The Entity ID (User, Bot  or Organization)
     entity    Entity    @relation(fields: [entityId], references: [id])
+    createdAt DateTime  @default(now())
+    updatedAt DateTime? @updatedAt
+
+    @@unique([fileId, entityId])
 }
 
-model EntityWebhooks {
-    id       String  @id @default(uuid()) // The webhook ID
-    token    String  @db.LongText // The webhook token
-    name     String  @db.Text // The webhook name
-    enabled  Boolean @default(false) // If the webhook is enabled
-    entityId String // The entity the webhook belongs to
+model Webhooks {
+    id       String  @id @unique // The unique identifier for the webhook 
+    name     String  @db.Text // The name of the webhook (IE: Discord Webhook)
+    token    String  @db.Text // The token for the webhook
+    enabled  Boolean @default(true) // If the webhook is enabled
+    hook_url String  @db.Text // The URL for the webhook
+    entityId String // The Entity ID (User, Bot or Organization)
     entity   Entity  @relation(fields: [entityId], references: [id])
 }
 
-model OrgEntityMembers {
-    id     String        @id @unique // Unique identifier for the organization member
-    org    OrgEntity     @relation(fields: [orgId], references: [id]) // The organization the member belongs to
-    roles  EntityPerms[] @relation("OrgEntityRoles") // The roles the member has in the organization
-    userid String        @unique // The user ID of the member
-    orgId  String
-}
-
-model OrgEntityLinks {
-    id        String    @id @unique // Unique identifier for the organization links
-    discord   String    @db.Text // The organization Discord link
-    github    String    @db.Text // The organization GitHub link
-    twitter   String    @db.Text // The organization Twitter link
-    website   String    @db.Text // The organization website link
-    instagram String    @db.Text // The organization Instagram link
-    youtube   String    @db.Text // The organization YouTube link
-    orgId     String    @unique
-    org       OrgEntity @relation(fields: [orgId], references: [id]) // The organization the links belong to
-}
-
+//-- ERROR REPORTING AND TRACKING SYSTEM (SNAILY) --//
 model errors {
     id        String    @id @default(uuid()) // Unique identifier for the error
     state     ErrStates @default(OPEN) // The state of the error
@@ -138,6 +134,7 @@ model errors {
     updatedAt DateTime? @updatedAt // The date the error was last updated
 }
 
+//-- PARTNER SYSTEM FOR CORDX --//
 model partners {
     id     String @id @default(uuid()) // Unique identifier for the partner
     name   String @db.Text // The partner name
@@ -147,6 +144,7 @@ model partners {
     social String @db.Text // The partner social link
 }
 
+//-- REPORTING SYSTEM FOR CORDX --//
 model reports {
     id        String       @id // Unique identifier for the report
     type      ReportTypes  @default(BUG_REPORT) // The type of the report
@@ -158,37 +156,31 @@ model reports {
     updatedAt DateTime?    @updatedAt // The date the report was last updated
 }
 
-// Enums for the schema
-// --------------------------
 enum EntityType {
-    USER
-    ORG
+    DISCORD_BOT
+    DISCORD_USER
+    ORGANIZATION
 }
 
-enum PermissionType {
-    USER
-    ORG
-}
-
-enum UserPermissions {
-    OWNER
-    ADMIN
-    STAFF
-    SUPPORT
-    DEVELOPER
+enum UserEntityPerms {
+    CORDX_OWNER
+    CORDX_ADMIN
+    CORDX_STAFF
+    CORDX_DEV
     BETA_TESTER
     BANNED_USER
     VERIFIED_USER
+    BASE_USER
 }
 
-enum OrgPermissions {
+enum OrgMemberPerms {
     OWNER
     ADMIN
     EDITOR
     READER
-    GUEST
-    BANNED
     VERIFIED
+    BANNED
+    GUEST
 }
 
 enum ReportTypes {

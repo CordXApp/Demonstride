@@ -1,5 +1,6 @@
 import Logger from '@utils/logger.util';
 import { PrismaClient } from '@prisma/client';
+import Cornflake from '@/utils/cornflake.util';
 import type CordX from '@/client';
 
 /**
@@ -14,6 +15,7 @@ const prisma = new PrismaClient();
 export class DatabaseClient {
     private logs: Logger;
     private cordx: CordX;
+    public cornflake: Cornflake;
     public prisma: PrismaClient;
 
     /** Primsa Clients */
@@ -28,6 +30,14 @@ export class DatabaseClient {
         this.entities = new EntityClient(cordx);
         this.users = new UserClient(cordx);
         this.domains = new DomainClient(cordx);
+        this.cornflake = new Cornflake({
+            workerId: 1,
+            processId: 2,
+            epoch: 3,
+            increment: 4,
+            sequence: 5n,
+            debug: false
+        })
     }
 
     public async isConnected(): Promise<boolean> {

@@ -25,16 +25,9 @@ export interface UserEntity {
     userid: string;
     folder?: string;
     key?: string;
-    signature?: UserEntitySignatures;
     entityId?: string;
     entity?: Entity;
     orgs?: OrgEntity[];
-}
-
-export interface UserEntitySignatures {
-    id: string;
-    key: string;
-    userEntity?: UserEntity;
 }
 
 export interface Entity {
