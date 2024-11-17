@@ -14,15 +14,10 @@ interface UserParams {
  *       - in: path
  *         name: id
  *         required: true
+ *         description: The user's ID, can either be a Discord ID or a CordX Cornflake ID.
  *         schema:
  *           type: string
- *           description: The users's ID, can either be a Discord ID or a CordX Cornflake ID.
- *       - in: query
- *         name: id_type
- *         required: true
- *         schema:
- *           type: string
- *           description: The type of ID provided, can either be DISCORD or CORNFLAKE.
+ *           description: The user's ID, can either be a Discord ID or a CordX Cornflake ID.
  *     responses:
  *       200:
  *         description: Returns the user details
@@ -31,7 +26,7 @@ interface UserParams {
  *             schema:
  *               $ref: '#/components/schemas/UserEntity'
  *       400:
- *         description: Missing or invalid CordX Cornflake ID
+ *         description: Missing or invalid ID
  *         content:
  *           application/json:
  *             schema:
@@ -51,30 +46,50 @@ interface UserParams {
  *     UserEntity:
  *       type: object
  *       properties:
+ *         id:
+ *           type: string
+ *           description: The user's Cornflake ID
+ *         name:
+ *           type: string
+ *           description: The user's name
+ *         handle:
+ *           type: string
+ *           description: The user's handle
+ *         type:
+ *           type: string
+ *           description: The type of entity
+ *         biography:
+ *           type: string
+ *           description: The user's biography
  *         avatar:
  *           type: string
  *           description: The user's Discord Avatar URL
  *         banner:
  *           type: string
  *           description: The user's Discord Banner URL
- *         username:
- *           type: string
- *           description: The user's Discord Username
- *         globalName:
- *           type: string
- *           description: The user's Discord Global Username
  *         userid:
  *           type: string
  *           description: The user's Discord ID
- *         entityId:
+ *         createdAt:
  *           type: string
- *           description: The user's Entity ID
+ *           format: date-time
+ *           description: The date the entity was created
+ *         updatedAt:
+ *           type: string
+ *           format: date-time
+ *           description: The date the entity was last updated
  *         _count:
  *           type: object
  *           properties:
- *             orgs:
+ *             domains:
  *               type: number
- *               description: The number of organizations the user is in/owns
+ *               description: The number of domains the user owns
+ *             uploads:
+ *               type: number
+ *               description: The number of uploads by the user
+ *             perms:
+ *               type: number
+ *               description: The number of permissions the user has
  *     Error:
  *       type: object
  *       properties:
@@ -91,21 +106,15 @@ interface UserParams {
 
 const FetchUser: FastifyPluginAsync = async (fastify, _opts): Promise<void> => {
 
-    fastify.get<{ Params: UserParams, Querystring: { id_type: 'DISCORD' | 'CORNFLAKE' } }>('/user/:id', async (_request, _reply) => {
+    fastify.get<{ Params: UserParams }>('/:id', async (_request, _reply) => {
 
-        if (!_request.query.id_type) return _reply.code(400).send({
-            status: '[Demonstride:user_fetch:missing_id_type]',
-            message: 'Please provide a valid id type for the user',
+        if (!_request.params.id) return _reply.code(400).send({
+            status: '[Demonstride:user_fetch:missing_id]',
+            message: 'Please provide a valid Cornflake ID for the User Entity',
             code: 400
         })
 
-        if (_request.query.id_type !== 'DISCORD' && _request.query.id_type !== 'CORNFLAKE') return _reply.code(400).send({
-            status: '[Demonstride:user_fetch:invalid_id_type]',
-            message: 'Please provide a valid id type for the user (DISCORD or CORNFLAKE)',
-            code: 400
-        })
-
-        const user = await fastify.cordx.db.users.model.fetch(_request.params.id, _request.query.id_type);
+        const user = await fastify.cordx.db.entities.users.method.fetch(_request.params.id);
 
         if (!user.success) return _reply.code(404).send({
             status: '[Demonstride:user_fetch:error]',

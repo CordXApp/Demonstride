@@ -33,6 +33,30 @@ model Entity {
     updatedAt DateTime?    @updatedAt // The date the entity was last updated
 }
 
+//-- CORDX BLOG POSTS AND AUTHOR(S) --//
+model BlogPost {
+    id        String    @id @default(uuid()) // Unique identifier for the blog post
+    title     String    @db.VarChar(255) // The title of the blog post
+    content   String    @db.LongText // The content of the blog post
+    published Boolean   @default(false) // Indicates if the blog post is published
+    authorId  String // Foreign key to the Author model
+    author    Author    @relation(fields: [authorId], references: [id]) // Relation to the Author model
+    createdAt DateTime  @default(now()) // The date the blog post was created
+    updatedAt DateTime? @updatedAt // The date the blog post was last updated
+}
+
+//-- AUTHOR MODEL --//
+model Author {
+    id        String     @id @default(uuid()) // Unique identifier for the author
+    name      String     @db.VarChar(255) // The name of the author
+    bio       String?    @db.LongText // The biography of the author
+    avatar    String?    @db.Text // The avatar image for the author
+    logo      String?    @db.Text // The logo of the author
+    blogPosts BlogPost[] // List of blog posts written by the author
+    createdAt DateTime   @default(now()) // The date the author was created
+    updatedAt DateTime?  @updatedAt // The date the author was last updated
+}
+
 //-- A USERS PERMISSIONS WITHIN THE CORDX SYSTEM --//
 model UserPerms {
     id         String          @id @default(uuid())
