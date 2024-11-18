@@ -6,7 +6,7 @@ export class SecurityModule implements EncryptionClient {
     private logs: Logger;
 
     constructor() {
-        this.logs = new Logger('Demonstide:EncryptionModule');
+        this.logs = new Logger('Demonstride:EncryptionModule');
     }
 
     public get init() {
