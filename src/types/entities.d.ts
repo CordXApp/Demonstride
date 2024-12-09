@@ -15,9 +15,9 @@ export interface Entities {
    */
   name?: string;
   /**
-   * The type of Entity (e.g. 'DISCORD_USER', 'DISCORD_BOT', 'ORGANIZATION')
+   * The type of Entity (e.g. 'DISCORD_USER', 'DISCORD_BOT', 'ORGANIZATION', 'INTEGRATION')
    */
-  type?: "DISCORD_BOT" | "DISCORD_USER" | "ORGANIZATION";
+  type?: "DISCORD_BOT" | "DISCORD_USER" | "ORGANIZATION" | "INTEGRATION";
   /**
    * The handle of the entity (ie: @cordx)
    */
@@ -66,5 +66,73 @@ export interface Entities {
    * The date the entity was last updated
    */
   updatedAt?: string;
+  domains?: EntityDomains[];
+  uploads?: EntityUploads[];
+  webhooks?: EntityWebhooks[];
+  perms?: EntityPerms[];
+  secrets?: EntitySecret[];
+  members?: OrgEntityMembers[];
+  links?: OrgEntityLinks;
+  [k: string]: unknown;
+}
+export interface EntityDomains {
+  id?: string;
+  name?: string;
+  content?: string;
+  verified?: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+  entityId?: string;
+  [k: string]: unknown;
+}
+export interface EntityUploads {
+  id?: string;
+  entityId?: string;
+  fileid?: string;
+  filename?: string;
+  name?: string;
+  type?: string;
+  size?: number;
+  date?: string;
+  [k: string]: unknown;
+}
+export interface EntityWebhooks {
+  id?: string;
+  token?: string;
+  name?: string;
+  enabled?: boolean;
+  entityId?: string;
+  [k: string]: unknown;
+}
+export interface EntityPerms {
+  id?: string;
+  type?: "USER" | "ORG";
+  userPerm?: "OWNER" | "ADMIN" | "STAFF" | "SUPPORT" | "DEVELOPER" | "BETA_TESTER" | "BANNED_USER" | "VERIFIED_USER";
+  orgPerm?: "OWNER" | "ADMIN" | "EDITOR" | "READER" | "GUEST" | "BANNED" | "VERIFIED";
+  entityId?: string;
+  org_memberId?: string;
+  [k: string]: unknown;
+}
+export interface EntitySecret {
+  id?: string;
+  key?: string;
+  [k: string]: unknown;
+}
+export interface OrgEntityMembers {
+  id?: string;
+  orgId?: string;
+  userid?: string;
+  roles?: EntityPerms[];
+  [k: string]: unknown;
+}
+export interface OrgEntityLinks {
+  id?: string;
+  discord?: string;
+  github?: string;
+  twitter?: string;
+  website?: string;
+  instagram?: string;
+  youtube?: string;
+  orgId?: string;
   [k: string]: unknown;
 }

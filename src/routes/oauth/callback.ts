@@ -15,7 +15,7 @@ const CallBack: FastifyPluginAsync = async (fastify, _opts): Promise<void> => {
             code: 400
         });
 
-        let redirect = JSON.parse(decodeURIComponent(state));
+        let { redirect } = JSON.parse(decodeURIComponent(state));
 
         const token = await auth.tokenRequest({
             clientId: fastify.cordx.user!.id as string,
@@ -32,10 +32,44 @@ const CallBack: FastifyPluginAsync = async (fastify, _opts): Promise<void> => {
 
         const auth_code = createHash('sha256').update(`${randomUUID()}_${randomUUID()}`.replace(/-/g, "")).digest('hex');
 
-        let user = await fastify.cordx.db.prisma.userEntity.findUnique({ where: { userid: authorized.id } });
+        let user = await fastify.cordx.db.entities.users.method.fetch(authorized.id);
 
-        let avatarUrl: string = authorized.avatar?.startsWith('a_') ? `https://cdn.discordapp.com/avatars/${authorized.id}/${authorized.avatar}.gif` : `https://cdn.discordapp.com/avatars/${authorized.id}/${authorized.avatar}.png`;
-        let bannerUrl: string = authorized.banner?.startsWith('a_') ? `https://cdn.discordapp.com/banners/${authorized.id}/${authorized.banner}.gif` : `https://cdn.discordapp.com/banners/${authorized.id}/${authorized.banner}.png`;
+        let avatarUrl: string = authorized.avatar?.startsWith('a_') ? `https://cdn.discordapp.com/avatars/${authorized.id}/${authorized.avatar}.gif` : `https://cdn.discordapp.com/avatars/${authorized.id}/${authorized.avatar}.webp`;
+        let bannerUrl: string = authorized.banner?.startsWith('a_') ? `https://cdn.discordapp.com/banners/${authorized.id}/${authorized.banner}.gif` : `https://cdn.discordapp.com/banners/${authorized.id}/${authorized.banner}.webp`;
+
+        if (!user.success) user = await fastify.cordx.db.entities.users.method.create({
+            name: authorized.username as string,
+            handle: authorized.global_name as string,
+            userid: authorized.id,
+            avatar: avatarUrl,
+            banner: bannerUrl
+        });
+
+        if (!user.success) return _reply.code(500).send({
+            status: '[Demonstride:oauth_error]',
+            message: user.message,
+            code: 500
+        });
+
+        if (user.data.permissions.includes('BANNED_USER')) return _reply.code(403).send({
+            status: '[Demonstride:oauth_forbidden]',
+            message: 'You are banned from using the CordX services!',
+            code: 403
+        });
+
+        if (!user.data.permissions.includes('BETA_TESTER')) return _reply.code(403).send({
+            status: '[Demonstride:oauth_forbidden]',
+            message: 'This authorization process is currently limited to beta testers!',
+            code: 403
+        });
+
+        const encodedAuthCode = encodeURIComponent(auth_code);
+        const encodedUser = encodeURIComponent(JSON.stringify(user.data));
+
+        if (redirect.includes('localhost')) redirect = `http://${redirect}/api/auth/validate?user_data=${encodedUser}&auth_code=${encodedAuthCode}`;
+        else redirect = `https://${redirect}/api/auth/validate?user_data=${encodedUser}&auth_code=${encodedAuthCode}`;
+
+        return _reply.code(302).redirect(redirect);
 
 
     });

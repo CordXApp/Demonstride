@@ -15,9 +15,10 @@
             "enum": [
                 "DISCORD_BOT",
                 "DISCORD_USER",
-                "ORGANIZATION"
+                "ORGANIZATION",
+                "INTEGRATION"
             ],
-            "description": "The type of Entity (e.g. 'DISCORD_USER', 'DISCORD_BOT', 'ORGANIZATION')"
+            "description": "The type of Entity (e.g. 'DISCORD_USER', 'DISCORD_BOT', 'ORGANIZATION', 'INTEGRATION')"
         },
         "handle": {
             "type": "string",
@@ -68,11 +69,231 @@
             "type": "string",
             "format": "date-time",
             "description": "The date the entity was last updated"
+        },
+        "domains": {
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/EntityDomains"
+            }
+        },
+        "uploads": {
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/EntityUploads"
+            }
+        },
+        "webhooks": {
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/EntityWebhooks"
+            }
+        },
+        "perms": {
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/EntityPerms"
+            }
+        },
+        "secrets": {
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/EntitySecret"
+            }
+        },
+        "members": {
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/OrgEntityMembers"
+            }
+        },
+        "links": {
+            "$ref": "#/definitions/OrgEntityLinks"
         }
     },
     "definitions": {
-        "Entity": {
-            "$ref": "#/properties"
+        "EntityDomains": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "content": {
+                    "type": "string"
+                },
+                "verified": {
+                    "type": "boolean"
+                },
+                "createdAt": {
+                    "type": "string",
+                    "format": "date-time"
+                },
+                "updatedAt": {
+                    "type": "string",
+                    "format": "date-time"
+                },
+                "entityId": {
+                    "type": "string"
+                }
+            }
+        },
+        "EntityUploads": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "entityId": {
+                    "type": "string"
+                },
+                "fileid": {
+                    "type": "string"
+                },
+                "filename": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                },
+                "size": {
+                    "type": "number"
+                },
+                "date": {
+                    "type": "string",
+                    "format": "date-time"
+                }
+            }
+        },
+        "EntityWebhooks": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "token": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "enabled": {
+                    "type": "boolean"
+                },
+                "entityId": {
+                    "type": "string"
+                }
+            }
+        },
+        "EntityPerms": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string",
+                    "enum": [
+                        "USER",
+                        "ORG"
+                    ]
+                },
+                "userPerm": {
+                    "type": "string",
+                    "enum": [
+                        "OWNER",
+                        "ADMIN",
+                        "STAFF",
+                        "SUPPORT",
+                        "DEVELOPER",
+                        "BETA_TESTER",
+                        "BANNED_USER",
+                        "VERIFIED_USER"
+                    ]
+                },
+                "orgPerm": {
+                    "type": "string",
+                    "enum": [
+                        "OWNER",
+                        "ADMIN",
+                        "EDITOR",
+                        "READER",
+                        "GUEST",
+                        "BANNED",
+                        "VERIFIED"
+                    ]
+                },
+                "entityId": {
+                    "type": "string"
+                },
+                "org_memberId": {
+                    "type": "string"
+                }
+            }
+        },
+        "EntitySecret": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "key": {
+                    "type": "string"
+                }
+            }
+        },
+        "OrgEntityMembers": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "orgId": {
+                    "type": "string"
+                },
+                "userid": {
+                    "type": "string"
+                },
+                "roles": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/EntityPerms"
+                    }
+                }
+            }
+        },
+        "OrgEntityLinks": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "discord": {
+                    "type": "string"
+                },
+                "github": {
+                    "type": "string"
+                },
+                "twitter": {
+                    "type": "string"
+                },
+                "website": {
+                    "type": "string"
+                },
+                "instagram": {
+                    "type": "string"
+                },
+                "youtube": {
+                    "type": "string"
+                },
+                "orgId": {
+                    "type": "string"
+                }
+            }
         }
     }
 }
