@@ -7,6 +7,7 @@ A RESTful API designed to manage and access various services provided by the Cor
 - **GraphQL Integration**: Query and mutate data using GraphQL.
 - **Swagger Documentation**: Auto-generated API documentation for easy reference.
 - **Health Checks**: Monitor the health and status of the API.
+- **Prisma Studio**: View and manage the database in your browser.
 
 ---
 
