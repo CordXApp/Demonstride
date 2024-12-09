@@ -1,0 +1,42 @@
+{
+    "env": {
+        "browser": false,
+        "es2021": true,
+        "node": true
+    },
+    "parserOptions": {
+        "ecmaVersion": 12,
+        "sourceType": "module",
+        "requireConfigFile": false
+    },
+    "rules": {
+        "no-var": "error", // Disallow var, use let and const instead
+        "prefer-const": "error", // Prefer const over let when variable is not reassigned
+        "no-unused-vars": "warn", // Disallow unused variables (warn instead of error)
+        "eqeqeq": "error", // Require === and !==
+        "curly": "error", // Require curly braces for all control statements
+        "no-debugger": "error", // Disallow debugger statements
+        "no-trailing-spaces": "error", // Disallow trailing whitespace
+        "eol-last": "warn", // Allow files to not end with a newline (warn instead of error)
+        "comma-dangle": "error", // Disallow trailing commas
+        "object-curly-spacing": "error", // Enforce consistent spacing inside braces
+        "array-bracket-spacing": "error", // Enforce consistent spacing inside array brackets
+        "arrow-spacing": "error", // Enforce consistent spacing before and after arrow functions
+        "space-before-function-paren": "off", // Allow spaces before function parentheses
+        "keyword-spacing": "error", // Enforce consistent spacing before and after keywords
+        "space-infix-ops": "error", // Require spacing around infix operators
+        "key-spacing": "error", // Enforce consistent spacing between keys and values in object literals
+        "no-multiple-empty-lines": "error", // Disallow multiple empty lines
+        "no-multi-spaces": "error", // Disallow multiple spaces
+        "no-whitespace-before-property": "error", // Disallow whitespace before properties
+        "space-before-blocks": "error", // Enforce consistent spacing before blocks
+        "space-in-parens": "error", // Disallow spaces inside parentheses
+        "spaced-comment": "error", // Enforce consistent spacing after the // or /* in a comment
+        "consistent-return": "warn", // Require return statements to either always or never specify values
+        "no-else-return": "warn", // Disallow return before else (warn instead of error)
+        "no-lonely-if": "warn", // Disallow if statements as the only statement in else blocks (warn instead of error)
+        "no-nested-ternary": "error", // Disallow nested ternary expressions
+        "no-unneeded-ternary": "warn", // Disallow ternary operators when simpler alternatives exist (warn instead of error)
+        "prefer-arrow-callback": "warn" // Prefer arrow functions as callbacks (warn instead of error)
+    }
+}
