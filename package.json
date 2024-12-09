@@ -15,7 +15,7 @@
   "scripts": {
     "build": "tsup",
     "build:ts": "tsup --env.NODE_ENV production",
-    "database": "node scripts/db-script.js",
+    "database": "node scripts/database.js",
     "dev": "bun dev:watch",
     "dev:watch": "tsx watch src/server.ts",
     "start": "tsx src/server.ts",

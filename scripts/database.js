@@ -5,7 +5,8 @@ const commands = {
     init: 'prisma init --schema=./src/prisma/schema.prisma',
     generate: 'prisma generate --schema=./src/prisma/schema.prisma',
     push: 'prisma db push --schema=./src/prisma/schema.prisma',
-    pull: 'prisma db pull --schema=./src/prisma/schema.prisma'
+    pull: 'prisma db pull --schema=./src/prisma/schema.prisma',
+    studio: 'prisma studio --schema=./src/prisma/schema.prisma'
 };
 
 const questions = [
@@ -29,6 +30,10 @@ const questions = [
             {
                 name: 'Pull Database Schema',
                 value: 'pull'
+            },
+            {
+                name: 'Run Prisma Studio',
+                value: 'studio'
             }
         ]
     }
