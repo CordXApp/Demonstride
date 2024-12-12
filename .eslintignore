@@ -1,0 +1,7 @@
+# Ignore useless stuff
+node_modules/
+scripts/
+.vscode/
+.husky/
+.github/
+dist/

@@ -4,11 +4,19 @@
         "es2021": true,
         "node": true
     },
+    "parser": "@typescript-eslint/parser",
     "parserOptions": {
         "ecmaVersion": 12,
         "sourceType": "module",
-        "requireConfigFile": false
+        "project": "./tsconfig.json"
     },
+    "plugins": [
+        "@typescript-eslint"
+    ],
+    "extends": [
+        "eslint:recommended",
+        "plugin:@typescript-eslint/recommended"
+    ],
     "rules": {
         "no-var": "error", // Disallow var, use let and const instead
         "prefer-const": "error", // Prefer const over let when variable is not reassigned
@@ -38,5 +46,9 @@
         "no-nested-ternary": "error", // Disallow nested ternary expressions
         "no-unneeded-ternary": "warn", // Disallow ternary operators when simpler alternatives exist (warn instead of error)
         "prefer-arrow-callback": "warn" // Prefer arrow functions as callbacks (warn instead of error)
-    }
+    },
+    "ignorePatterns": [
+        "node_modules",
+        "dist"
+    ]
 }
