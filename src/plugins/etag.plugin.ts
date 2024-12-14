@@ -7,11 +7,11 @@ export default fp<FastifyEtagOptions>(
     async (
         fastify,
         opts = {
-            weak: false,
-        },
+            weak: false
+        }
     ) => {
         await fastify.register(etag, {
-            ...opts,
+            ...opts
         })
-    },
+    }
 )

@@ -34,11 +34,7 @@
                     "description": "The list of files and directories within this directory (if it is a directory)."
                 }
             },
-            "required": [
-                "name",
-                "isDirectory",
-                "path"
-            ]
+            "required": ["name", "isDirectory", "path"]
         }
     }
 }

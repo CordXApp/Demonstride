@@ -12,12 +12,7 @@
         },
         "type": {
             "type": "string",
-            "enum": [
-                "DISCORD_BOT",
-                "DISCORD_USER",
-                "ORGANIZATION",
-                "INTEGRATION"
-            ],
+            "enum": ["DISCORD_BOT", "DISCORD_USER", "ORGANIZATION", "INTEGRATION"],
             "description": "The type of Entity (e.g. 'DISCORD_USER', 'DISCORD_BOT', 'ORGANIZATION', 'INTEGRATION')"
         },
         "handle": {
@@ -197,10 +192,7 @@
                 },
                 "type": {
                     "type": "string",
-                    "enum": [
-                        "USER",
-                        "ORG"
-                    ]
+                    "enum": ["USER", "ORG"]
                 },
                 "userPerm": {
                     "type": "string",
@@ -217,15 +209,7 @@
                 },
                 "orgPerm": {
                     "type": "string",
-                    "enum": [
-                        "OWNER",
-                        "ADMIN",
-                        "EDITOR",
-                        "READER",
-                        "GUEST",
-                        "BANNED",
-                        "VERIFIED"
-                    ]
+                    "enum": ["OWNER", "ADMIN", "EDITOR", "READER", "GUEST", "BANNED", "VERIFIED"]
                 },
                 "entityId": {
                     "type": "string"

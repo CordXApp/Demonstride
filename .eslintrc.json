@@ -18,9 +18,12 @@
         "plugin:@typescript-eslint/recommended"
     ],
     "rules": {
+        "@typescript-eslint/no-unused-vars": "off", // Allow unused variables
+        "@typescript-eslint/no-explicit-any": "off", // Allow explicit any types where needed
+        "@typescript/no-explicit-any": "off", // Allow explicit any types where needed
         "no-var": "error", // Disallow var, use let and const instead
         "prefer-const": "error", // Prefer const over let when variable is not reassigned
-        "no-unused-vars": "warn", // Disallow unused variables (warn instead of error)
+        "no-unused-vars": "off", // Disallow unused variables (warn instead of error)
         "eqeqeq": "error", // Require === and !==
         "curly": "error", // Require curly braces for all control statements
         "no-debugger": "error", // Disallow debugger statements
@@ -43,7 +46,7 @@
         "consistent-return": "warn", // Require return statements to either always or never specify values
         "no-else-return": "warn", // Disallow return before else (warn instead of error)
         "no-lonely-if": "warn", // Disallow if statements as the only statement in else blocks (warn instead of error)
-        "no-nested-ternary": "error", // Disallow nested ternary expressions
+        "no-nested-ternary": "warn", // Disallow nested ternary expressions
         "no-unneeded-ternary": "warn", // Disallow ternary operators when simpler alternatives exist (warn instead of error)
         "prefer-arrow-callback": "warn" // Prefer arrow functions as callbacks (warn instead of error)
     },

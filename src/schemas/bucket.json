@@ -76,24 +76,12 @@
         "BucketData": {
             "$ref": "#/properties/BucketData",
             "type": "object",
-            "required": [
-                "status",
-                "total",
-                "limit",
-                "Bucket"
-            ]
+            "required": ["status", "total", "limit", "Bucket"]
         },
         "BucketItem": {
             "$ref": "#/properties/BucketItem",
             "type": "object",
-            "required": [
-                "userId",
-                "itemId",
-                "itemSize",
-                "lastModified",
-                "itemETag",
-                "itemOwner"
-            ]
+            "required": ["userId", "itemId", "itemSize", "lastModified", "itemETag", "itemOwner"]
         }
     }
 }

@@ -20,45 +20,20 @@
         "isolatedModules": true,
         "forceConsistentCasingInFileNames": true,
         "skipLibCheck": true,
-        "lib": [
-            "ESNext"
-        ],
+        "lib": ["ESNext"],
         "baseUrl": ".",
         "paths": {
-            "@/*": [
-                "src/*"
-            ],
-            "@cdn/*": [
-                "src/cdn/*"
-            ],
-            "@generated/*": [
-                "src/generated/*"
-            ],
-            "@modules/*": [
-                "src/modules/*"
-            ],
-            "@plugins/*": [
-                "src/plugins/*"
-            ],
-            "@router/*": [
-                "src/routes/*"
-            ],
-            "@schemas/*": [
-                "src/schemas/*"
-            ],
-            "@types/*": [
-                "src/types/*"
-            ],
-            "@utils/*": [
-                "src/utils/*"
-            ]
+            "@/*": ["src/*"],
+            "@cdn/*": ["src/cdn/*"],
+            "@generated/*": ["src/generated/*"],
+            "@modules/*": ["src/modules/*"],
+            "@plugins/*": ["src/plugins/*"],
+            "@router/*": ["src/routes/*"],
+            "@schemas/*": ["src/schemas/*"],
+            "@types/*": ["src/types/*"],
+            "@utils/*": ["src/utils/*"]
         }
     },
-    "include": [
-        "src/**/*.ts"
-    ],
-    "exclude": [
-        "node_modules",
-        "dist"
-    ]
+    "include": ["src/**/*.ts"],
+    "exclude": ["node_modules", "dist"]
 }

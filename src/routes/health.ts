@@ -14,11 +14,6 @@ const health: FastifyPluginAsync = async (fastify): Promise<void> => {
         const memoryUsage = process.memoryUsage()
         const uptime = process.uptime()
 
-        const dbState = (await fastify.cordx.db.isConnected()) ? 'Connected' : 'Disconnected'
-        const users = await fastify.cordx.db.prisma.entity.findMany({ where: { type: 'DISCORD_USER' } })
-        const orgs = await fastify.cordx.db.prisma.entity.findMany({ where: { type: 'ORGANIZATION' } })
-        const bots = await fastify.cordx.db.prisma.entity.findMany({ where: { type: 'INTEGRATION' } })
-
         const healthStatus = {
             status: 'OK',
             message: 'Demonstride is healthy and running.',
@@ -29,15 +24,8 @@ const health: FastifyPluginAsync = async (fastify): Promise<void> => {
                     heapUsed: memoryUsage.heapUsed,
                     external: memoryUsage.external
                 },
-                database: {
-                    status: dbState,
-                    entities: {
-                        users: users.length,
-                        orgs: orgs.length,
-                        bots: bots.length
-                    }
-                },
                 system: {
+                    database: fastify.cordx.db.isConnected(),
                     uptime: `${Math.floor(uptime / 60)} minutes ${Math.floor(uptime % 60)} seconds`,
                     nodeVersion: process.version,
                     platform: process.platform,

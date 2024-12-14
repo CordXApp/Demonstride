@@ -2,21 +2,21 @@ import closeWithGrace from 'close-with-grace'
 import * as dotenv from 'dotenv'
 import Fastify from 'fastify'
 
-import { initGraphql } from './graphql';
-import { initSwagger } from './swagger';
-import { ClientOptions } from 'discord.js';
-import CordX from './client';
+import { initGraphql } from './graphql'
+import { initSwagger } from './swagger'
+import { ClientOptions } from 'discord.js'
+import CordX from './client'
 
 import app from './app'
 
 dotenv.config()
 
-const discordOptions: ClientOptions = { intents: ["GuildMembers", "MessageContent"] }
+const discordOptions: ClientOptions = { intents: ['GuildMembers', 'MessageContent'] }
 const discordClient = new CordX(discordOptions)
 
 const isProduction = process.env.NODE_ENV === 'production'
 const server = Fastify({
-    logger: !isProduction,
+    logger: !isProduction
 })
 
 void server.register(app)
@@ -25,9 +25,9 @@ void initGraphql(server)
 
 void initSwagger(server)
 
-void discordClient.authenticate(process.env.TOKEN as string);
+void discordClient.authenticate(process.env.TOKEN as string)
 
-server.decorate('cordx', discordClient);
+server.decorate('cordx', discordClient)
 
 const closeListeners = closeWithGrace({ delay: 500 }, async (opts: any) => {
     if (opts.err) {
@@ -35,7 +35,7 @@ const closeListeners = closeWithGrace({ delay: 500 }, async (opts: any) => {
     }
 
     await server.close()
-    await discordClient.destroy();
+    await discordClient.destroy()
 })
 
 server.addHook('onClose', (_instance, done) => {
@@ -45,36 +45,32 @@ server.addHook('onClose', (_instance, done) => {
 
 void server.listen({
     port: Number(process.env.PORT ?? 4995),
-    host: process.env.SERVER_HOSTNAME ?? '127.0.0.1',
+    host: process.env.SERVER_HOSTNAME ?? '127.0.0.1'
 })
 
-void server.ready((err) => {
+void server.ready(err => {
     if (err) {
         server.log.error(err)
         process.exit(1)
     }
 
-    server.log.info(
-        'All routes loaded! Check your console for the route details.',
-    )
+    server.log.info('All routes loaded! Check your console for the route details.')
 
     console.log(server.printRoutes())
 
-    server.log.info(
-        `Server listening on port ${Number(process.env.PORT ?? 4995)}`,
-    )
+    server.log.info(`Server listening on port ${Number(process.env.PORT ?? 4995)}`)
 })
 
 declare module 'fastify' {
     interface FastifyInstance {
         /** The Demonstride Client */
-        demonstride: CordX;
+        demonstride: CordX
         /** Alias for the Demonstride Client */
-        cordx: CordX;
+        cordx: CordX
         /** Alias for the Demonstride Client */
-        demon: CordX;
+        demon: CordX
         /** Alias for the Demonstride Client */
-        ds: CordX;
+        ds: CordX
     }
 }
 

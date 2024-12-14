@@ -1,4 +1,4 @@
-import type { FastifyPluginAsync } from "fastify";
+import type { FastifyPluginAsync } from 'fastify'
 
 /**
  * @swagger
@@ -23,7 +23,7 @@ import type { FastifyPluginAsync } from "fastify";
  *   schemas:
  *     Entity:
  *       type: object
- *       properties: 
+ *       properties:
  *         id:
  *           type: string
  *           description: The Entity's CordX Cornflake ID
@@ -48,10 +48,8 @@ import type { FastifyPluginAsync } from "fastify";
  */
 
 const EntityRoot: FastifyPluginAsync = async (fastify, _opts): Promise<void> => {
-
     fastify.get('/', async (_request, _reply) => {
-
-        const totalEntities = await fastify.cordx.db.prisma.entity.count();
+        const totalEntities = await fastify.cordx.db.prisma.entity.count()
 
         const entityList = await fastify.cordx.db.prisma.entity.findMany({
             select: {
@@ -66,7 +64,7 @@ const EntityRoot: FastifyPluginAsync = async (fastify, _opts): Promise<void> => 
                     }
                 }
             }
-        });
+        })
 
         return _reply.code(200).send({
             status: '[Demonstride:entity_root:success]',
@@ -74,7 +72,7 @@ const EntityRoot: FastifyPluginAsync = async (fastify, _opts): Promise<void> => 
             entities: entityList,
             code: 200
         })
-    });
+    })
 }
 
-export default EntityRoot;
+export default EntityRoot

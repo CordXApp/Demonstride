@@ -6,55 +6,55 @@
  */
 
 export interface UserAndErrorSchema {
-  UserEntity?: {
-    /**
-     * The user's Discord Avatar URL
-     */
-    avatar?: string;
-    /**
-     * The user's Discord Banner URL
-     */
-    banner?: string;
-    /**
-     * The user's Discord Username
-     */
-    username?: string;
-    /**
-     * The user's Discord Global Username
-     */
-    globalName?: string;
-    /**
-     * The user's Discord ID
-     */
-    userid?: string;
-    /**
-     * The user's Entity ID
-     */
-    entityId?: string;
-    _count?: {
-      /**
-       * The number of organizations the user is in/owns
-       */
-      orgs?: number;
-      [k: string]: unknown;
-    };
-    [k: string]: unknown;
-  };
-  Error?: Error;
-  [k: string]: unknown;
+    UserEntity?: {
+        /**
+         * The user's Discord Avatar URL
+         */
+        avatar?: string
+        /**
+         * The user's Discord Banner URL
+         */
+        banner?: string
+        /**
+         * The user's Discord Username
+         */
+        username?: string
+        /**
+         * The user's Discord Global Username
+         */
+        globalName?: string
+        /**
+         * The user's Discord ID
+         */
+        userid?: string
+        /**
+         * The user's Entity ID
+         */
+        entityId?: string
+        _count?: {
+            /**
+             * The number of organizations the user is in/owns
+             */
+            orgs?: number
+            [k: string]: unknown
+        }
+        [k: string]: unknown
+    }
+    Error?: Error
+    [k: string]: unknown
 }
 export interface Error {
-  /**
-   * The status code of the error
-   */
-  status?: string;
-  /**
-   * The error message
-   */
-  message?: string;
-  /**
-   * The HTTP status code
-   */
-  code?: number;
-  [k: string]: unknown;
+    /**
+     * The status code of the error
+     */
+    status?: string
+    /**
+     * The error message
+     */
+    message?: string
+    /**
+     * The HTTP status code
+     */
+    code?: number
+    [k: string]: unknown
 }

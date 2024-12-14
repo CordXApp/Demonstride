@@ -12,22 +12,27 @@ const swaggerDefinition: SwaggerDefinition = {
     info: {
         title: 'Demonstride',
         version: '4.3.0',
-        description: 'Restful API for the CordX Services',
+        description: 'Restful API for the CordX Services'
     },
     host: `0.0.0.0:${process.env.PORT ?? 4995}`,
-    tags: [{
-        name: 'Auth',
-        description: 'Authentication API'
-    }, {
-        name: 'Bucket',
-        description: 'Bucket API'
-    }, {
-        name: 'Entities',
-        description: 'Entities API'
-    }, {
-        name: 'Users',
-        description: 'Users API',
-    }],
+    tags: [
+        {
+            name: 'Auth',
+            description: 'Authentication API'
+        },
+        {
+            name: 'Bucket',
+            description: 'Bucket API'
+        },
+        {
+            name: 'Entities',
+            description: 'Entities API'
+        },
+        {
+            name: 'Users',
+            description: 'Users API'
+        }
+    ]
 }
 
 const apiDirectory = join(__dirname, 'routes')
@@ -35,7 +40,7 @@ const apiDirectory = join(__dirname, 'routes')
 const options: swaggerJsdoc.Options = {
     swaggerDefinition,
     // Path to the API docs
-    apis: [`${apiDirectory}/**/*.js`, `${apiDirectory}/**/*.ts`],
+    apis: [`${apiDirectory}/**/*.js`, `${apiDirectory}/**/*.ts`]
 }
 
 export async function initSwagger(app: FastifyInstance) {
@@ -43,10 +48,7 @@ export async function initSwagger(app: FastifyInstance) {
 
     // Write to generated swagger file on development
     if (process.env.NODE_ENV !== 'production') {
-        writeFileSync(
-            join(__dirname, 'generated', 'swagger.json'),
-            JSON.stringify(swaggerSpec, null, 2),
-        )
+        writeFileSync(join(__dirname, 'generated', 'swagger.json'), JSON.stringify(swaggerSpec, null, 2))
     }
 
     await app.register(fastifySwagger, {
@@ -56,15 +58,15 @@ export async function initSwagger(app: FastifyInstance) {
             postProcessor(swaggerObject) {
                 return swaggerObject
             },
-            baseDir: join(__dirname, 'generated'),
-        },
+            baseDir: join(__dirname, 'generated')
+        }
     })
 
     await app.register(fastifySwaggerUi, {
         routePrefix: '/docs',
         uiConfig: {
             docExpansion: 'full',
-            deepLinking: false,
+            deepLinking: false
         },
         uiHooks: {
             onRequest(request, reply, next) {
@@ -72,9 +74,9 @@ export async function initSwagger(app: FastifyInstance) {
             },
             preHandler(request, reply, next) {
                 next()
-            },
+            }
         },
         staticCSP: true,
-        transformStaticCSP: (header) => header,
+        transformStaticCSP: header => header
     })
 }

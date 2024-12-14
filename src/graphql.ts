@@ -1,28 +1,28 @@
 import AltairFastify from 'altair-fastify-plugin'
-import type { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify'
+import type { FastifyInstance, FastifyRequest } from 'fastify'
 import mercurius from 'mercurius'
 import mercuriusCodegen from 'mercurius-codegen'
 import { makeSchema, queryType, stringArg } from 'nexus'
 
-const buildContext = async (req: FastifyRequest, _reply: FastifyReply) => ({
-    authorization: req.headers.authorization,
+const buildContext = async (req: FastifyRequest) => ({
+    authorization: req.headers.authorization
 })
 
 const Query = queryType({
     definition(t) {
         t.string('hello', {
             args: { name: stringArg() },
-            resolve: (_parent, { name }) => `Hello ${name ?? 'World'}!`,
+            resolve: (_parent, { name }) => `Hello ${name ?? 'World'}!`
         })
-    },
+    }
 })
 
 const schema = makeSchema({
     types: [Query],
     outputs: {
         schema: `${__dirname}/generated/schema.graphql`,
-        typegen: `${__dirname}/generated/typings.ts`,
-    },
+        typegen: `${__dirname}/generated/typings.ts`
+    }
 })
 
 export async function initGraphql(app: FastifyInstance) {
@@ -33,17 +33,17 @@ export async function initGraphql(app: FastifyInstance) {
             ide: false,
             path: '/graphql',
             allowBatchedQueries: true,
-            context: buildContext,
+            context: buildContext
         })
 
         await app.register(AltairFastify, {
             path: '/gql',
             baseURL: '/gql/',
-            endpointURL: '/graphql',
+            endpointURL: '/graphql'
         })
 
         await mercuriusCodegen(app, {
-            targetPath: `${__dirname}/generated/graphql.ts`,
+            targetPath: `${__dirname}/generated/graphql.ts`
         })
     } catch (err: unknown) {
         app.log.error(err)

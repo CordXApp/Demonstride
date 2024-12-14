@@ -1,5 +1,5 @@
-import { exec } from 'child_process';
-import inquirer from 'inquirer';
+import { exec } from 'child_process'
+import inquirer from 'inquirer'
 
 const commands = {
     init: 'prisma init --schema=./src/prisma/schema.prisma',
@@ -7,7 +7,7 @@ const commands = {
     push: 'prisma db push --schema=./src/prisma/schema.prisma',
     pull: 'prisma db pull --schema=./src/prisma/schema.prisma',
     studio: 'prisma studio --schema=./src/prisma/schema.prisma'
-};
+}
 
 const questions = [
     {
@@ -37,23 +37,23 @@ const questions = [
             }
         ]
     }
-];
+]
 
 inquirer.prompt(questions).then(({ command }) => {
-    const selectedCommand = commands[command];
-    console.log(`Executing prisma command...`);
+    const selectedCommand = commands[command]
+    console.log(`Executing prisma command...`)
 
     exec(selectedCommand, (error, stdout, stderr) => {
         if (error) {
-            console.error(`Error: ${error.message}`);
-            return;
+            console.error(`Error: ${error.message}`)
+            return
         }
 
         if (stderr) {
-            console.error(`Error: ${stderr}`);
-            return;
+            console.error(`Error: ${stderr}`)
+            return
         }
 
-        console.log(`Success: ${stdout}`);
-    });
-});
+        console.log(`Success: ${stdout}`)
+    })
+})

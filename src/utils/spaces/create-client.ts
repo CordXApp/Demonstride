@@ -1,4 +1,4 @@
-import { S3 } from '@aws-sdk/client-s3';
+import { S3 } from '@aws-sdk/client-s3'
 
 export function createBucketClient() {
     const s3 = new S3({
@@ -9,7 +9,7 @@ export function createBucketClient() {
             accessKeyId: process.env.SPACES_KEY as string,
             secretAccessKey: process.env.SPACES_SECRET as string
         }
-    });
+    })
 
-    return s3;
+    return s3
 }

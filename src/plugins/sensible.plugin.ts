@@ -5,6 +5,6 @@ import sensible from '@fastify/sensible'
 
 export default fp<SensibleOptions>(async (fastify, opts) => {
     await fastify.register(sensible, {
-        ...opts,
+        ...opts
     })
 })

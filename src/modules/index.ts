@@ -1,2 +1,2 @@
-export * from './encryption.module';
-export * from './spaces';
+export * from './encryption.module'
+export * from './spaces'

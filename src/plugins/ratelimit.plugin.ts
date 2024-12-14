@@ -8,11 +8,11 @@ export default fp<RateLimitOptions>(
         fastify,
         opts = {
             max: 100,
-            timeWindow: '1 minute',
-        },
+            timeWindow: '1 minute'
+        }
     ) => {
         await fastify.register(rateLimit, {
-            ...opts,
+            ...opts
         })
-    },
+    }
 )

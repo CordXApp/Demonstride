@@ -1,7 +1,7 @@
-import fp from 'fastify-plugin';
+import fp from 'fastify-plugin'
 
-import type { FastifyEnvOptions } from '@fastify/env';
-import env from '@fastify/env';
+import type { FastifyEnvOptions } from '@fastify/env'
+import env from '@fastify/env'
 
 const schema = {
     type: 'object',
@@ -20,6 +20,6 @@ const options = {
     dotenv: true
 }
 
-export default fp<FastifyEnvOptions>(async (fastify) => {
-    await fastify.register(env, options);
-});
+export default fp<FastifyEnvOptions>(async fastify => {
+    await fastify.register(env, options)
+})

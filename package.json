@@ -1,111 +1,111 @@
 {
-  "name": "@cordxapp/demonstride",
-  "description": "RESTful API for managing and accessing CordX Services, version 4",
-  "keywords": [
-    "cordx",
-    "api",
-    "cordxapp",
-    "demonstride",
-    "fastify",
-    "typescript"
-  ],
-  "author": "TheRealToxicDev",
-  "version": "4.0.0",
-  "main": "app.ts",
-  "scripts": {
-    "build": "tsup",
-    "build:ts": "tsup --env.NODE_ENV production",
-    "generate": "prisma generate",
-    "dev": "bun dev:watch",
-    "dev:watch": "tsx watch src/server.ts",
-    "start": "tsx src/server.ts",
-    "start:prod": "node dist/server.js",
-    "typecheck": "tsc -noEmit",
-    "prestart": "prisma generate",
-    "prepare": "husky"
-  },
-  "dependencies": {
-    "@aws-sdk/client-s3": "^3.685.0",
-    "@fastify/autoload": "5.10.0",
-    "@fastify/cors": "9.0.1",
-    "@fastify/env": "4.4.0",
-    "@fastify/etag": "5.2.0",
-    "@fastify/helmet": "11.1.1",
-    "@fastify/multipart": "8.3.0",
-    "@fastify/rate-limit": "9.1.0",
-    "@fastify/sensible": "5.6.0",
-    "@fastify/swagger": "8.15.0",
-    "@fastify/swagger-ui": "4.1.0",
-    "@fastify/static": "6.12.0",
-    "altair-fastify-plugin": "7.3.6",
-    "axios": "^1.7.7",
-    "close-with-grace": "^2.1.0",
-    "discord.js": "^14.16.3",
-    "discord-oauth2": "^2.12.1",
-    "depcheck": "^1.4.7",
-    "dotenv": "^16.4.5",
-    "fastify": "4.28.1",
-    "fastify-plugin": "^5.0.1",
-    "graphql": "^16.9.0",
-    "mercurius": "14.1.0",
-    "mercurius-codegen": "5.0.5",
-    "moment": "^2.30.1",
-    "nexus": "^1.3.0",
-    "s3-readstream": "^2.0.1",
-    "swagger-jsdoc": "6.2.8"
-  },
-  "devDependencies": {
-    "@commitlint/cli": "^19.6.0",
-    "@commitlint/config-conventional": "^19.6.0",
-    "@cordxapp/db": "latest",
-    "@cordxapp/prettierlogs": "latest",
-    "@types/bun": "latest",
-    "@types/node": "^22.7.9",
-    "@types/swagger-jsdoc": "^6.0.4",
-    "@typescript-eslint/parser": "^8.18.0",
-    "@typescript-eslint/eslint-plugin": "^8.18.0",
-    "commitlint": "^19.6.0",
-    "cpy-cli": "^5.0.0",
-    "eslint": "^8",
-    "eslint-config-prettier": "^9.1.0",
-    "husky": "^9.1.7",
-    "json-schema-to-typescript": "^15.0.2",
-    "lint-staged": "^15.2.10",
-    "prettier": "^3.3.3",
-    "tsup": "^8.3.0",
-    "tsx": "^4.19.1",
-    "typescript": "^5.6.3"
-  },
-  "tsup": {
-    "entry": [
-      "src/**/*.ts"
+    "name": "@cordxapp/demonstride",
+    "description": "RESTful API for managing and accessing CordX Services, version 4",
+    "keywords": [
+        "cordx",
+        "api",
+        "cordxapp",
+        "demonstride",
+        "fastify",
+        "typescript"
     ],
-    "splitting": false,
-    "sourcemap": false,
-    "clean": true,
-    "format": [
-      "cjs",
-      "esm"
-    ],
-    "legacyOutput": true,
-    "target": "es2018",
-    "onSuccess": "npm run copy:assets"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/CordXApp/Demonstride.git"
-  },
-  "lint-staged": {
-    "./src/**/*.{ts,tsx,js,jsx}": [
-      "eslint --fix",
-      "prettier --write ."
-    ],
-    "./src/**/*.{json,md,yml}": [
-      "prettier --write ."
-    ]
-  },
-  "prisma": {
-    "schema": "node_modules/@cordxapp/db/prisma/schema.prisma",
-    "clientOutput": "node_modules/@prisma/client"
-  }
+    "author": "TheRealToxicDev",
+    "version": "4.0.0",
+    "main": "app.ts",
+    "scripts": {
+        "build": "tsup",
+        "build:ts": "tsup --env.NODE_ENV production",
+        "generate": "prisma generate",
+        "dev": "bun dev:watch",
+        "dev:watch": "tsx watch src/server.ts",
+        "start": "tsx src/server.ts",
+        "start:prod": "node dist/server.js",
+        "typecheck": "tsc -noEmit",
+        "prestart": "prisma generate",
+        "prepare": "husky"
+    },
+    "dependencies": {
+        "@aws-sdk/client-s3": "^3.685.0",
+        "@fastify/autoload": "5.10.0",
+        "@fastify/cors": "9.0.1",
+        "@fastify/env": "4.4.0",
+        "@fastify/etag": "5.2.0",
+        "@fastify/helmet": "11.1.1",
+        "@fastify/multipart": "8.3.0",
+        "@fastify/rate-limit": "9.1.0",
+        "@fastify/sensible": "5.6.0",
+        "@fastify/swagger": "8.15.0",
+        "@fastify/swagger-ui": "4.1.0",
+        "@fastify/static": "6.12.0",
+        "altair-fastify-plugin": "7.3.6",
+        "axios": "^1.7.7",
+        "close-with-grace": "^2.1.0",
+        "discord.js": "^14.16.3",
+        "discord-oauth2": "^2.12.1",
+        "depcheck": "^1.4.7",
+        "dotenv": "^16.4.5",
+        "fastify": "4.28.1",
+        "fastify-plugin": "^5.0.1",
+        "graphql": "^16.9.0",
+        "mercurius": "14.1.0",
+        "mercurius-codegen": "5.0.5",
+        "moment": "^2.30.1",
+        "nexus": "^1.3.0",
+        "s3-readstream": "^2.0.1",
+        "swagger-jsdoc": "6.2.8"
+    },
+    "devDependencies": {
+        "@commitlint/cli": "^19.6.0",
+        "@commitlint/config-conventional": "^19.6.0",
+        "@cordxapp/db": "^1.1.7",
+        "@cordxapp/prettierlogs": "^1.1.6",
+        "@types/bun": "latest",
+        "@types/node": "^22.7.9",
+        "@types/swagger-jsdoc": "^6.0.4",
+        "@typescript-eslint/parser": "^8.18.0",
+        "@typescript-eslint/eslint-plugin": "^8.18.0",
+        "commitlint": "^19.6.0",
+        "cpy-cli": "^5.0.0",
+        "eslint": "^8",
+        "eslint-config-prettier": "^9.1.0",
+        "husky": "^9.1.7",
+        "json-schema-to-typescript": "^15.0.2",
+        "lint-staged": "^15.2.10",
+        "prettier": "^3.3.3",
+        "tsup": "^8.3.0",
+        "tsx": "^4.19.1",
+        "typescript": "^5.6.3"
+    },
+    "tsup": {
+        "entry": [
+            "src/**/*.ts"
+        ],
+        "splitting": false,
+        "sourcemap": false,
+        "clean": true,
+        "format": [
+            "cjs",
+            "esm"
+        ],
+        "legacyOutput": true,
+        "target": "es2018",
+        "onSuccess": "npm run copy:assets"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/CordXApp/Demonstride.git"
+    },
+    "lint-staged": {
+        "./src/**/*.{ts,tsx,js,jsx}": [
+            "eslint --fix",
+            "prettier --write ."
+        ],
+        "./src/**/*.{json,md,yml}": [
+            "prettier --write ."
+        ]
+    },
+    "prisma": {
+        "schema": "node_modules/@cordxapp/db/prisma/schema.prisma",
+        "clientOutput": "node_modules/@prisma/client"
+    }
 }

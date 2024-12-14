@@ -1,7 +1,7 @@
-import type { FastifyPluginAsync } from "fastify";
+import type { FastifyPluginAsync } from 'fastify'
 
 interface UserParams {
-    id: string;
+    id: string
 }
 
 /**
@@ -105,29 +105,31 @@ interface UserParams {
  */
 
 const FetchUser: FastifyPluginAsync = async (fastify, _opts): Promise<void> => {
-
     fastify.get<{ Params: UserParams }>('/:id', async (_request, _reply) => {
+        if (!_request.params.id) {
+            return _reply.code(400).send({
+                status: '[Demonstride:user_fetch:missing_id]',
+                message: 'Please provide a valid Cornflake ID for the User Entity',
+                code: 400
+            })
+        }
 
-        if (!_request.params.id) return _reply.code(400).send({
-            status: '[Demonstride:user_fetch:missing_id]',
-            message: 'Please provide a valid Cornflake ID for the User Entity',
-            code: 400
-        })
+        const user = await fastify.cordx.db.entities.users.fetch(_request.params.id)
 
-        const user = await fastify.cordx.db.entities.users.method.fetch(_request.params.id);
-
-        if (!user.success) return _reply.code(404).send({
-            status: '[Demonstride:user_fetch:error]',
-            message: user.message,
-            code: 404
-        });
+        if (!user.success) {
+            return _reply.code(404).send({
+                status: '[Demonstride:user_fetch:error]',
+                message: user.message,
+                code: 404
+            })
+        }
 
         return _reply.code(200).send({
             status: '[Demonstride:user_fetch:success]',
             user: user.data,
             code: 200
         })
-    });
+    })
 }
 
-export default FetchUser;
+export default FetchUser
