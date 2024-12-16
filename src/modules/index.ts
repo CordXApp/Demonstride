@@ -1,2 +1,1 @@
-export * from './encryption.module'
-export * from './spaces'
+export * from './seaweed'

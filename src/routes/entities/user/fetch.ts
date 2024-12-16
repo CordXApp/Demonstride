@@ -109,7 +109,7 @@ const FetchUser: FastifyPluginAsync = async (fastify, _opts): Promise<void> => {
         if (!_request.params.id) {
             return _reply.code(400).send({
                 status: '[Demonstride:user_fetch:missing_id]',
-                message: 'Please provide a valid Cornflake ID for the User Entity',
+                message: 'Please provide a valid Discord or Cornflake ID for the User Entity',
                 code: 400
             })
         }

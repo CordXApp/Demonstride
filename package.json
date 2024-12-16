@@ -16,7 +16,7 @@
         "build": "tsup",
         "build:ts": "tsup --env.NODE_ENV production",
         "generate": "prisma generate",
-        "dev": "bun dev:watch",
+        "dev": "prisma generate && bun dev:watch",
         "dev:watch": "tsx watch src/server.ts",
         "start": "tsx src/server.ts",
         "start:prod": "node dist/server.js",

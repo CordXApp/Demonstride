@@ -1,8 +1,8 @@
 import AltairFastify from 'altair-fastify-plugin'
 import type { FastifyInstance, FastifyRequest } from 'fastify'
-import mercurius from 'mercurius'
-import mercuriusCodegen from 'mercurius-codegen'
 import { makeSchema, queryType, stringArg } from 'nexus'
+import mercuriusCodegen from 'mercurius-codegen'
+import mercurius from 'mercurius'
 
 const buildContext = async (req: FastifyRequest) => ({
     authorization: req.headers.authorization
@@ -11,7 +11,12 @@ const buildContext = async (req: FastifyRequest) => ({
 const Query = queryType({
     definition(t) {
         t.string('hello', {
-            args: { name: stringArg() },
+            description: 'Returns a greeting message. Example: `query { hello(name: "Toxic Dev") }`',
+            args: {
+                name: stringArg({
+                    description: 'The name of the person to greet. If not provided, defaults to "World"'
+                })
+            },
             resolve: (_parent, { name }) => `Hello ${name ?? 'World'}!`
         })
     }

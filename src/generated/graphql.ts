@@ -29,6 +29,7 @@ export type Scalars = {
 
 export type Query = {
     __typename?: 'Query'
+    /** Returns a greeting message. Example: `query { hello(name: "Toxic Dev") }` */
     hello?: Maybe<Scalars['String']>
 }
 

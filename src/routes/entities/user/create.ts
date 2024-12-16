@@ -20,7 +20,15 @@ const CreateUserEntity: FastifyPluginAsync = async (fastify, _opts): Promise<voi
         }
 
         try {
-            const entity = await fastify.ds.db.entities.create.user({ name: name, handle: handle, userid: userId })
+            const apiKey = await fastify.cordx.db.entities.createApiKey()
+            const encrypted = await fastify.cordx.db.entities.encrypt(apiKey)
+
+            const entity = await fastify.cordx.db.entities.users.create({
+                name: name,
+                handle: handle,
+                userid: userId,
+                apiKey: encrypted
+            })
 
             return _reply.status(200).send({
                 status: '[Demonstride:Entity:CreateUserEntity]',
