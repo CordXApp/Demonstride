@@ -1,4 +1,4 @@
-import type { FastifyPluginAsync } from 'fastify'
+import type {FastifyPluginAsync} from 'fastify'
 
 /**
  * @swagger
@@ -49,9 +49,9 @@ import type { FastifyPluginAsync } from 'fastify'
 
 const EntityRoot: FastifyPluginAsync = async (fastify, _opts): Promise<void> => {
     fastify.get('/', async (_request, _reply) => {
-        const totalEntities = await fastify.cordx.db.prisma.entity.count()
+        const totalEntities = await fastify.db.prisma.entity.count()
 
-        const entityList = await fastify.cordx.db.prisma.entity.findMany({
+        const entityList = await fastify.db.prisma.entity.findMany({
             select: {
                 id: true,
                 type: true,

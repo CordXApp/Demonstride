@@ -1,161 +1,184 @@
-import type { FastifyPluginAsync } from 'fastify'
-import { UserBucket } from '@/modules'
-
-interface BucketParams {
-    id: string
-}
-
-interface BucketQuery {
-    limit?: number
-}
+import type {FastifyPluginAsync} from 'fastify'
+import axios from 'axios'
 
 /**
  * @swagger
- * /bucket/{id}:
+ * /bucket:
  *   get:
  *     tags: ['Bucket']
- *     description: Fetches the user's bucket and its contents.
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: string
- *         description: The user's Discord ID.
- *       - in: query
- *         name: limit
- *         required: false
- *         schema:
- *           type: integer
- *         description: The maximum number of items to return.
+ *     description: Get our bucket server statistics.
  *     responses:
  *       200:
- *         description: Returns the user's bucket and its contents.
+ *         description: Server statistics.
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/BucketData'
- *       400:
- *         description: Missing or invalid Discord ID.
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Error'
- *       404:
- *         description: User or Bucket not found
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Error'
+ *               $ref: '#/components/schemas/BucketStats'
+ *       500:
+ *         description: Failed to fetch bucket stats.
  */
 
 /**
  * @swagger
  * components:
  *   schemas:
- *     BucketData:
+ *     BucketStats:
  *       type: object
  *       properties:
  *         status:
  *           type: string
- *           description: The status of the request.
- *         total:
+ *           description: Status message.
+ *         uptime:
  *           type: string
- *           description: The total number of items in the user's bucket.
- *         limit:
+ *           description: Uptime of the bucket server.
+ *         nodes:
  *           type: string
- *           description: The number of items to show.
- *         bucket:
- *           type: array
- *           items:
- *             $ref: '#/components/schemas/BucketItem'
- *     BucketItem:
- *       type: object
- *       properties:
- *         userId:
+ *           description: Number of nodes online.
+ *         buckets:
  *           type: string
- *           description: Item owner's Discord ID.
- *         itemId:
+ *           description: Total number of buckets.
+ *         objects:
  *           type: string
- *           description: The bucket item's ID.
- *         itemSize:
- *           type: number
- *           description: The size of the item in bytes.
- *         lastModified:
+ *           description: Total number of objects stored.
+ *         totalStorageUsed:
  *           type: string
- *           format: date-time
- *           description: The last modified date of the item.
- *         itemETag:
+ *           description: Total storage used.
+ *         freeStorageSpace:
  *           type: string
- *           description: The ETag of the item.
- *         itemOwner:
+ *           description: Free storage space available.
+ *         totalRequests:
  *           type: string
- *           description: The owner of the item.
- *     Error:
- *       type: object
- *       properties:
- *         status:
+ *           description: Total number of requests.
+ *         totalErrors:
  *           type: string
- *           description: The status code of the error.
- *         message:
+ *           description: Total number of errors.
+ *         networkReceived:
  *           type: string
- *           description: The error message.
+ *           description: Total network traffic received.
+ *         networkSent:
+ *           type: string
+ *           description: Total network traffic sent.
  *         code:
- *           type: number
- *           description: The error code.
+ *           type: integer
+ *           description: HTTP status code.
  */
 
-const FetchUserBucket: FastifyPluginAsync = async (fastify, _opts): Promise<void> => {
-    fastify.get<{ Params: BucketParams; Querystring: BucketQuery }>('/:id', async (_request, _reply) => {
-        const { id } = _request.params
-        const { limit } = _request.query
+const formatUptime = (seconds: number): string => {
+    const days = Math.floor(seconds / (24 * 3600))
+    seconds %= 24 * 3600
+    const hours = Math.floor(seconds / 3600)
+    seconds %= 3600
+    const minutes = Math.floor(seconds / 60)
+    seconds = Math.floor(seconds % 60)
 
-        if (!id) {
-            return _reply.code(400).send({
-                status: '[Demonstride:user_bucket:missing_id]',
-                message: 'Please provide a valid Discord ID for the user whose bucket you want to fetch',
-                code: 400
+    return `${days}d ${hours}h ${minutes}m ${seconds}s`
+}
+
+const formatBytes = (bytes: number): string => {
+    const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB']
+    if (bytes === 0) {return '0 Byte'}
+    const i = Math.floor(Math.log(bytes) / Math.log(1024))
+    return `${(bytes / Math.pow(1024, i)).toFixed(2)} ${sizes[i]}`
+}
+
+const Bucket: FastifyPluginAsync = async (fastify, _opts): Promise<void> => {
+    fastify.get('/', async (_request, _reply) => {
+        try {
+            const uptime = 'minio_node_process_uptime_seconds'
+            const nodes = 'minio_cluster_nodes_online_total'
+            const buckets = 'minio_cluster_bucket_total'
+            const objects = 'minio_cluster_usage_object_total'
+            const totalStorage = 'minio_cluster_capacity_usable_total_bytes'
+            const freeStorage = 'minio_cluster_capacity_usable_free_bytes'
+            const totalRequests = 'minio_s3_requests_total'
+            const totalErrors = 'minio_s3_requests_errors_total'
+            const networkReceived = 'minio_s3_traffic_received_bytes'
+            const networkSent = 'minio_s3_traffic_sent_bytes'
+
+            const prometheusUrl = (process.env.PROMETHEUS_URL + 'api/v1/query') as string
+
+            const uptimeResponse = await axios.get(prometheusUrl, {params: {query: uptime}})
+            const nodesResponse = await axios.get(prometheusUrl, {params: {query: nodes}})
+            const bucketsResponse = await axios.get(prometheusUrl, {params: {query: buckets}})
+            const objectResponse = await axios.get(prometheusUrl, {params: {query: objects}})
+            const totalStorageResponse = await axios.get(prometheusUrl, {params: {query: totalStorage}})
+            const freeStorageResponse = await axios.get(prometheusUrl, {params: {query: freeStorage}})
+            const totalRequestsResponse = await axios.get(prometheusUrl, {params: {query: totalRequests}})
+            const totalErrorsResponse = await axios.get(prometheusUrl, {params: {query: totalErrors}})
+            const networkReceivedResponse = await axios.get(prometheusUrl, {params: {query: networkReceived}})
+            const networkSentResponse = await axios.get(prometheusUrl, {params: {query: networkSent}})
+
+            const uptimeMetrics = uptimeResponse.data.data.result
+            const uptimeTotal =
+                uptimeMetrics.length > 0 ? formatUptime(parseFloat(uptimeMetrics[0].value[1])) : 'Unknown'
+
+            const nodeMetrics = nodesResponse.data.data.result
+            const nodesOnline = nodeMetrics.length > 0 ? nodeMetrics[0].value[1] : 'Unknown'
+
+            const bucketsMetrics = bucketsResponse.data.data.result
+            const totalBuckets = bucketsMetrics.length > 0 ? bucketsMetrics[0].value[1] : 'Unknown'
+
+            const objectMetrics = objectResponse.data.data.result
+            const objectsStored = objectMetrics.length > 0 ? objectMetrics[0].value[1] : 'Unknown'
+
+            const totalStorageMetrics = totalStorageResponse.data.data.result
+            const totalStorageValue = totalStorageMetrics.length > 0 ? parseFloat(totalStorageMetrics[0].value[1]) : 0
+
+            const freeStorageMetrics = freeStorageResponse.data.data.result
+            const freeStorageValue = freeStorageMetrics.length > 0 ? parseFloat(freeStorageMetrics[0].value[1]) : 0
+
+            const totalStorageUsedValue = totalStorageValue - freeStorageValue
+
+            const totalRequestsMetrics = totalRequestsResponse.data.data.result
+            const totalRequestsValue = totalRequestsMetrics.length > 0 ? totalRequestsMetrics[0].value[1] : 'Unknown'
+
+            const totalErrorsMetrics = totalErrorsResponse.data.data.result
+            const totalErrorsValue = totalErrorsMetrics.length > 0 ? totalErrorsMetrics[0].value[1] : 'Unknown'
+
+            const networkReceivedMetrics = networkReceivedResponse.data.data.result
+            const networkReceivedValue =
+                networkReceivedMetrics.length > 0
+                    ? formatBytes(parseFloat(networkReceivedMetrics[0].value[1]))
+                    : 'Unknown'
+
+            const networkSentMetrics = networkSentResponse.data.data.result
+            const networkSentValue =
+                networkSentMetrics.length > 0 ? formatBytes(parseFloat(networkSentMetrics[0].value[1])) : 'Unknown'
+
+            const diskUsage = `${formatBytes(totalStorageUsedValue)}/${formatBytes(totalStorageValue)}`
+
+            return _reply.code(200).send({
+                status: '[Demonstride:cordx_object_storage]',
+                uptime: uptimeTotal,
+                nodes: nodesOnline,
+                buckets: totalBuckets,
+                objects: objectsStored,
+                diskUsage,
+                totalRequests: totalRequestsValue,
+                totalErrors: totalErrorsValue,
+                networkReceived: networkReceivedValue,
+                networkSent: networkSentValue,
+                code: 200
             })
-        }
+        } catch (err: unknown) {
+            if (err instanceof Error) {
+                fastify.log.error(err.stack)
 
-        const bucket = await new UserBucket(fastify.cordx).user.fetch(id)
+                return _reply.code(500).send({
+                    status: '[Demonstride:bucket_info_error]',
+                    message: 'Failed to fetch bucket stats',
+                    error: err.message,
+                    code: 500
+                })
+            }
 
-        if (!bucket.success) {
             return _reply.code(500).send({
-                status: '[Demonstride:user_bucket:failed]',
-                message: bucket.message,
+                status: '[Demonstride:bucket_info_unknown_error]',
+                message: 'Failed to fetch bucket stats',
                 code: 500
             })
         }
-
-        if (bucket.data.length === 0) {
-            return _reply.code(404).send({
-                status: '[Demonstride:user_bucket:not_found]',
-                message: 'No items found in the user bucket',
-                code: 404
-            })
-        }
-
-        const transformBucketData = (data: any[]) => {
-            return data.map(item => ({
-                userId: item.Key.split('/')[0] as string,
-                itemId: item.Key.split('/')[1] as string,
-                itemSize: item.Size as number,
-                lastModified: item.LastModified,
-                itemETag: item.ETag,
-                itemOwner: item.Owner.ID
-            }))
-        }
-
-        const transformedBucket = transformBucketData(bucket.data)
-
-        return _reply.code(200).send({
-            status: '[Demonstride:user_bucket:success]',
-            total: `User has: ${bucket.data.length} items in their bucket`,
-            limit: `We are showing ${limit ? limit : bucket.data.length} items`,
-            bucket: limit ? transformedBucket.slice(0, limit) : transformedBucket
-        })
     })
 }
 
-export default FetchUserBucket
+export default Bucket

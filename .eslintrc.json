@@ -10,13 +10,8 @@
         "sourceType": "module",
         "project": "./tsconfig.json"
     },
-    "plugins": [
-        "@typescript-eslint"
-    ],
-    "extends": [
-        "eslint:recommended",
-        "plugin:@typescript-eslint/recommended"
-    ],
+    "plugins": ["@typescript-eslint"],
+    "extends": ["eslint:recommended", "plugin:@typescript-eslint/recommended"],
     "rules": {
         "@typescript-eslint/no-empty-object-type": "off", // Allow empty object types
         "@typescript-eslint/no-unused-vars": "off", // Allow unused variables
@@ -52,8 +47,5 @@
         "no-inner-declarations": "off", // Allow function declarations in nested blocks
         "prefer-arrow-callback": "warn" // Prefer arrow functions as callbacks (warn instead of error)
     },
-    "ignorePatterns": [
-        "node_modules",
-        "dist"
-    ]
+    "ignorePatterns": ["node_modules", "dist"]
 }

@@ -1,12 +1,13 @@
-import type { FastifyPluginAsync } from 'fastify'
-import { createHash, randomUUID } from 'node:crypto'
+import type {FastifyPluginAsync} from 'fastify'
+import {createHash, randomUUID} from 'node:crypto'
 import OAuth2Client from 'discord-oauth2'
 
 const Login: FastifyPluginAsync = async (fastify): Promise<void> => {
     fastify.get<{ Querystring: { redirect: string } }>('/login', async (_request, _reply) => {
-        let { redirect } = _request.query
-        const env: string = fastify.cordx.user?.id === '829979197912645652' ? 'development' : 'production'
+        let {redirect} = _request.query
         const auth = new OAuth2Client()
+
+        const devMode = process.env.NODE_ENV === 'development' ? true : false
 
         if (redirect && (redirect.includes('https://') || redirect.includes('http://'))) {
             return _reply.code(400).send({
@@ -29,8 +30,8 @@ const Login: FastifyPluginAsync = async (fastify): Promise<void> => {
         })
 
         const url = auth.generateAuthUrl({
-            clientId: fastify.cordx.user!.id as string,
-            redirectUri: env === 'development' ? process.env.DEV_REDIRECT : process.env.PROD_REDIRECT,
+            clientId: devMode ? process.env.DEV_CLIENT_ID : process.env.PROD_CLIENT_ID,
+            redirectUri: devMode ? process.env.DEV_REDIRECT : process.env.PROD_REDIRECT,
             scope: ['identify', 'guilds'],
             state: encodeURIComponent(state)
         })

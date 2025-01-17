@@ -1,5 +1,5 @@
-import type { GraphQLResolveInfo } from 'graphql'
-import type { MercuriusContext } from 'mercurius'
+import type {GraphQLResolveInfo} from 'graphql'
+import type {MercuriusContext} from 'mercurius'
 export type Maybe<T> = T | null
 export type InputMaybe<T> = Maybe<T>
 export type Exact<T extends { [key: string]: unknown }> = {

@@ -14,12 +14,10 @@
     "main": "app.ts",
     "scripts": {
         "build": "tsup",
-        "build:ts": "tsup --env.NODE_ENV production",
-        "generate": "prisma generate",
         "dev": "prisma generate && bun dev:watch",
-        "dev:watch": "tsx watch src/server.ts",
-        "start": "tsx src/server.ts",
-        "start:prod": "node dist/server.js",
+        "dev:watch": "tsx watch src/server.ts --env.NODE_ENV development",
+        "start": "tsx src/server.ts --env.NODE_ENV production",
+        "start:prod": "node dist/server.js --env.NODE_ENV production",
         "typecheck": "tsc -noEmit",
         "prestart": "prisma generate",
         "prepare": "husky"
@@ -40,7 +38,6 @@
         "altair-fastify-plugin": "7.3.6",
         "axios": "^1.7.7",
         "close-with-grace": "^2.1.0",
-        "discord.js": "^14.16.3",
         "discord-oauth2": "^2.12.1",
         "depcheck": "^1.4.7",
         "dotenv": "^16.4.5",
@@ -57,7 +54,7 @@
     "devDependencies": {
         "@commitlint/cli": "^19.6.0",
         "@commitlint/config-conventional": "^19.6.0",
-        "@cordxapp/db": "^1.1.7",
+        "@cordxapp/db": "^1.1.8",
         "@cordxapp/prettierlogs": "^1.1.6",
         "@types/bun": "latest",
         "@types/node": "^22.7.9",
@@ -97,13 +94,10 @@
     },
     "lint-staged": {
         "./src/**/*.{ts,tsx,js,jsx}": [
-            "eslint --fix",
-            "prettier --write .",
-            "git add"
+            "eslint --fix"
         ],
         "./src/**/*.{json,md,yml}": [
-            "prettier --write .",
-            "git add"
+            "prettier --write ."
         ]
     },
     "prisma": {

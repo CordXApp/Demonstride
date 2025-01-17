@@ -1,4 +1,4 @@
-import type { FastifyPluginAsync } from 'fastify'
+import type {FastifyPluginAsync} from 'fastify'
 
 const health: FastifyPluginAsync = async (fastify): Promise<void> => {
     /**
@@ -25,7 +25,7 @@ const health: FastifyPluginAsync = async (fastify): Promise<void> => {
                     external: memoryUsage.external
                 },
                 system: {
-                    database: fastify.cordx.db.isConnected(),
+                    database: fastify.db.isConnected(),
                     uptime: `${Math.floor(uptime / 60)} minutes ${Math.floor(uptime % 60)} seconds`,
                     nodeVersion: process.version,
                     platform: process.platform,

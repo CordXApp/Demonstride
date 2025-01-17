@@ -1,4 +1,4 @@
-import type { FastifyPluginAsync } from 'fastify'
+import type {FastifyPluginAsync} from 'fastify'
 
 interface UserParams {
     id: string
@@ -105,7 +105,7 @@ interface UserParams {
  */
 
 const FetchUser: FastifyPluginAsync = async (fastify, _opts): Promise<void> => {
-    fastify.get<{ Params: UserParams }>('/:id', async (_request, _reply) => {
+    fastify.get<{ Params: UserParams }>('/fetch/:id', async (_request, _reply) => {
         if (!_request.params.id) {
             return _reply.code(400).send({
                 status: '[Demonstride:user_fetch:missing_id]',
@@ -114,7 +114,7 @@ const FetchUser: FastifyPluginAsync = async (fastify, _opts): Promise<void> => {
             })
         }
 
-        const user = await fastify.cordx.db.entities.users.fetch(_request.params.id)
+        const user = await fastify.db.entities.users.fetch(_request.params.id)
 
         if (!user.success) {
             return _reply.code(404).send({

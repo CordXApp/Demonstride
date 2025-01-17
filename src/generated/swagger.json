@@ -25,60 +25,23 @@
         }
     ],
     "paths": {
-        "/bucket/{id}": {
+        "/bucket": {
             "get": {
                 "tags": ["Bucket"],
-                "description": "Fetches the user's bucket and its contents.",
-                "parameters": [
-                    {
-                        "in": "path",
-                        "name": "id",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        },
-                        "description": "The user's Discord ID."
-                    },
-                    {
-                        "in": "query",
-                        "name": "limit",
-                        "required": false,
-                        "schema": {
-                            "type": "integer"
-                        },
-                        "description": "The maximum number of items to return."
-                    }
-                ],
+                "description": "Get our bucket server statistics.",
                 "responses": {
                     "200": {
-                        "description": "Returns the user's bucket and its contents.",
+                        "description": "Server statistics.",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/BucketData"
+                                    "$ref": "#/components/schemas/BucketStats"
                                 }
                             }
                         }
                     },
-                    "400": {
-                        "description": "Missing or invalid Discord ID.",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/Error"
-                                }
-                            }
-                        }
-                    },
-                    "404": {
-                        "description": "User or Bucket not found",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/Error"
-                                }
-                            }
-                        }
+                    "500": {
+                        "description": "Failed to fetch bucket stats."
                     }
                 }
             }
@@ -154,29 +117,6 @@
                 }
             }
         },
-        "/files": {
-            "get": {
-                "description": "List all files and directories in the CDN.",
-                "responses": {
-                    "200": {
-                        "description": "A list of all files and directories in the CDN.",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "array",
-                                    "items": {
-                                        "$ref": "#/components/schemas/File"
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Unable to list files."
-                    }
-                }
-            }
-        },
         "/health": {
             "get": {
                 "description": "Check the health of the API.",
@@ -190,73 +130,56 @@
     },
     "components": {
         "schemas": {
-            "BucketData": {
+            "BucketStats": {
                 "type": "object",
                 "properties": {
                     "status": {
                         "type": "string",
-                        "description": "The status of the request."
+                        "description": "Status message."
                     },
-                    "total": {
+                    "uptime": {
                         "type": "string",
-                        "description": "The total number of items in the user's bucket."
+                        "description": "Uptime of the bucket server."
                     },
-                    "limit": {
+                    "nodes": {
                         "type": "string",
-                        "description": "The number of items to show."
+                        "description": "Number of nodes online."
                     },
-                    "bucket": {
-                        "type": "array",
-                        "items": {
-                            "$ref": "#/components/schemas/BucketItem"
-                        }
-                    }
-                }
-            },
-            "BucketItem": {
-                "type": "object",
-                "properties": {
-                    "userId": {
+                    "buckets": {
                         "type": "string",
-                        "description": "Item owner's Discord ID."
+                        "description": "Total number of buckets."
                     },
-                    "itemId": {
+                    "objects": {
                         "type": "string",
-                        "description": "The bucket item's ID."
+                        "description": "Total number of objects stored."
                     },
-                    "itemSize": {
-                        "type": "number",
-                        "description": "The size of the item in bytes."
+                    "totalStorageUsed": {
+                        "type": "string",
+                        "description": "Total storage used."
                     },
-                    "lastModified": {
+                    "freeStorageSpace": {
                         "type": "string",
-                        "format": "date-time",
-                        "description": "The last modified date of the item."
+                        "description": "Free storage space available."
                     },
-                    "itemETag": {
+                    "totalRequests": {
                         "type": "string",
-                        "description": "The ETag of the item."
+                        "description": "Total number of requests."
                     },
-                    "itemOwner": {
+                    "totalErrors": {
                         "type": "string",
-                        "description": "The owner of the item."
-                    }
-                }
-            },
-            "Error": {
-                "type": "object",
-                "properties": {
-                    "status": {
-                        "type": "string",
-                        "description": "The status code of the error"
+                        "description": "Total number of errors."
                     },
-                    "message": {
+                    "networkReceived": {
                         "type": "string",
-                        "description": "The error message"
+                        "description": "Total network traffic received."
+                    },
+                    "networkSent": {
+                        "type": "string",
+                        "description": "Total network traffic sent."
                     },
                     "code": {
-                        "type": "number",
-                        "description": "The HTTP status code"
+                        "type": "integer",
+                        "description": "HTTP status code."
                     }
                 }
             },
@@ -358,27 +281,20 @@
                     }
                 }
             },
-            "File": {
+            "Error": {
                 "type": "object",
                 "properties": {
-                    "name": {
+                    "status": {
                         "type": "string",
-                        "description": "The name of the file or directory."
+                        "description": "The status code of the error"
                     },
-                    "isDirectory": {
-                        "type": "boolean",
-                        "description": "Indicates if the item is a directory."
-                    },
-                    "path": {
+                    "message": {
                         "type": "string",
-                        "description": "The relative path to the file or directory."
+                        "description": "The error message"
                     },
-                    "children": {
-                        "type": "array",
-                        "items": {
-                            "$ref": "#/components/schemas/File"
-                        },
-                        "description": "The list of files and directories within this directory (if it is a directory)."
+                    "code": {
+                        "type": "number",
+                        "description": "The HTTP status code"
                     }
                 }
             }

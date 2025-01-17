@@ -1,18 +1,18 @@
 import closeWithGrace from 'close-with-grace'
+import {MinivisorClient} from '@/utils/buckets/minivisor'
+import {CordXDatabase} from '@cordxapp/db'
 import * as dotenv from 'dotenv'
 import Fastify from 'fastify'
 
-import { initGraphql } from './graphql'
-import { initSwagger } from './swagger'
-import { ClientOptions } from 'discord.js'
-import CordX from './client'
+import {initGraphql} from './graphql'
+import {initSwagger} from './swagger'
 
 import app from './app'
 
 dotenv.config()
 
-const discordOptions: ClientOptions = { intents: ['GuildMembers', 'MessageContent'] }
-const discordClient = new CordX(discordOptions)
+const databaseClient = new CordXDatabase()
+const minivisorClient = new MinivisorClient()
 
 const isProduction = process.env.NODE_ENV === 'production'
 const server = Fastify({
@@ -25,17 +25,15 @@ void initGraphql(server)
 
 void initSwagger(server)
 
-void discordClient.authenticate(process.env.TOKEN as string)
+server.decorate('db', databaseClient)
+server.decorate('mv', minivisorClient)
 
-server.decorate('cordx', discordClient)
-
-const closeListeners = closeWithGrace({ delay: 500 }, async (opts: any) => {
+const closeListeners = closeWithGrace({delay: 500}, async (opts: any) => {
     if (opts.err) {
         server.log.error(opts.err)
     }
 
     await server.close()
-    await discordClient.destroy()
 })
 
 server.addHook('onClose', (_instance, done) => {
@@ -63,15 +61,9 @@ void server.ready(err => {
 
 declare module 'fastify' {
     interface FastifyInstance {
-        /** The Demonstride Client */
-        demonstride: CordX
-        /** Alias for the Demonstride Client */
-        cordx: CordX
-        /** Alias for the Demonstride Client */
-        demon: CordX
-        /** Alias for the Demonstride Client */
-        ds: CordX
+        db: CordXDatabase
+        mv: MinivisorClient
     }
 }
 
-export { server as app }
+export {server as app}

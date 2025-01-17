@@ -1,11 +1,13 @@
-import type { FastifyPluginAsync } from 'fastify'
-import { createHash, randomUUID } from 'node:crypto'
+import type {FastifyPluginAsync} from 'fastify'
+import {createHash, randomUUID} from 'node:crypto'
 import OAuth2Client from 'discord-oauth2'
 
 const CallBack: FastifyPluginAsync = async (fastify): Promise<void> => {
     fastify.get<{ Querystring: { code: string; state: string } }>('/callback', async (_request, _reply) => {
-        const { code, state } = _request.query
+        const {code, state} = _request.query
         const auth = new OAuth2Client()
+
+        const devMode = process.env.NODE_ENV === 'development' ? true : false
 
         if (!code || !state) {
             return _reply.code(400).send({
@@ -15,13 +17,13 @@ const CallBack: FastifyPluginAsync = async (fastify): Promise<void> => {
             })
         }
 
-        let { redirect } = JSON.parse(decodeURIComponent(state))
+        let {redirect} = JSON.parse(decodeURIComponent(state))
 
         const token = await auth.tokenRequest({
-            clientId: fastify.cordx.user!.id as string,
-            clientSecret: process.env.NODE_ENV === 'production' ? process.env.PROD_SECRET : process.env.DEV_SECRET,
+            clientId: devMode ? process.env.DEV_CLIENT_ID : process.env.PROD_CLIENT_ID,
+            clientSecret: devMode ? process.env.DEV_SECRET : process.env.PROD_SECRET,
+            redirectUri: devMode ? process.env.DEV_REDIRECT : process.env.PROD_REDIRECT,
             grantType: 'authorization_code',
-            redirectUri: process.env.NODE_ENV === 'production' ? process.env.PROD_REDIRECT : process.env.DEV_REDIRECT,
             scope: 'identify guilds',
             code: code
         })
@@ -34,7 +36,7 @@ const CallBack: FastifyPluginAsync = async (fastify): Promise<void> => {
 
         const auth_code = createHash('sha256').update(`${randomUUID()}_${randomUUID()}`.replace(/-/g, '')).digest('hex')
 
-        let user = await fastify.cordx.db.entities.users.fetch(authorized.id)
+        let user = await fastify.db.entities.users.fetch(authorized.id)
 
         const avatarUrl: string = authorized.avatar?.startsWith('a_')
             ? `https://cdn.discordapp.com/avatars/${authorized.id}/${authorized.avatar}.gif`
@@ -44,7 +46,7 @@ const CallBack: FastifyPluginAsync = async (fastify): Promise<void> => {
             : `https://cdn.discordapp.com/banners/${authorized.id}/${authorized.banner}.webp`
 
         if (!user.success) {
-            user = await fastify.cordx.db.entities.users.create({
+            user = await fastify.db.entities.users.create({
                 name: authorized.username as string,
                 handle: authorized.global_name as string,
                 userid: authorized.id,

@@ -1,0 +1,32 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "BucketStats",
+    "type": "object",
+    "properties": {
+        "status": {
+            "type": "string",
+            "description": "Status message."
+        },
+        "uptime": {
+            "type": "string",
+            "description": "Uptime of the bucket server."
+        },
+        "nodes": {
+            "type": "string",
+            "description": "Number of nodes online."
+        },
+        "buckets": {
+            "type": "string",
+            "description": "Total number of buckets."
+        },
+        "objects": {
+            "type": "string",
+            "description": "Total number of objects stored."
+        },
+        "code": {
+            "type": "integer",
+            "description": "HTTP status code."
+        }
+    },
+    "required": ["status", "uptime", "nodes", "buckets", "objects", "code"]
+}
